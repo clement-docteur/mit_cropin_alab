@@ -178,13 +178,18 @@ if (RUN_CHARTS) {
     ndviCol.reduce(ee.Reducer.stdDev()).rename('ndvi_sd')             // seasonality
   );
 
-  // 30 m circle at each polygon's centre -> enough 10 m pixels to measure spread
+  // Measure INSIDE each labelled polygon, shrunk 10 m inward so no edge pixels
+  // are used. Tiny polygons (< 0.2 ha) fall back to a 15 m circle at the centre.
   var spots = grouped.filter(ee.Filter.inList('group', GROUPS)).map(function (f) {
-  var g = f.geometry();
-  // big enough polygons: shrink 10 m inward to avoid edges; tiny ones: small centre circle
-  return f.setGeometry(ee.Geometry(ee.Algorithms.If(
-    g.area(1).gt(2000), g.buffer(-10, 1), g.centroid(1).buffer(15))));
-});  // -> height_mean, height_stdDev, ndvi_med_mean, ndvi_p10_mean, ndvi_sd_mean, ...
+    var g = f.geometry();
+    return f.setGeometry(ee.Geometry(ee.Algorithms.If(
+      g.area(1).gt(2000), g.buffer(-10, 1), g.centroid(1).buffer(15))));
+  });
+  var feats = stack.reduceRegions({
+    collection: spots,
+    reducer: ee.Reducer.mean().combine(ee.Reducer.stdDev(), '', true),
+    scale: 10, tileScale: 16
+  });   // -> height_mean, height_stdDev, ndvi_med_mean, ndvi_p10_mean, ndvi_sd_mean, ...
 
   // ---- Chart 2: average of each feature per group (table) ---------------------
   var metrics = ['area_ha', 'height_mean', 'height_stdDev',
