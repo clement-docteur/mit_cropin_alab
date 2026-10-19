@@ -17,6 +17,7 @@ var PLANT_CODES  = [9];    // MapBiomas codes counted as plantation (9 = silvicu
 var SOUTH_ONLY   = true;   // true = only Parana, Santa Catarina, Rio Grande do Sul
 var EXPORTED     = true;  // flip to true after the export task finishes
 var RUN_CHARTS   = true;   // false = skip the exploration charts (faster)
+var RADIUS       = 15;     // metres around each point used for features (15 m = ~7 pixels)
 
 var points = ee.FeatureCollection('projects/cropin-510901/assets/mapbiomas_85k_points_validation');
 var RESULT = 'projects/cropin-510901/assets/val_vs_mapbiomas_features_' + YEAR;
@@ -93,10 +94,11 @@ if (!EXPORTED) {
     ndviCol.reduce(ee.Reducer.stdDev()).rename('ndvi_sd')             // seasonality
   );
 
-  // 30 m circle around each point -> enough 10 m pixels to measure spread;
-  // geometry is set back to the point afterwards so the map layers stay points
+  // Small circle around each point (RADIUS) -> a few 10 m pixels to measure spread
+  // while staying away from neighbouring stands; edge points were already dropped
+  // with the BORDA filter. Geometry is set back to the point afterwards.
   var feats = stack.reduceRegions({
-    collection: sampled.map(function (f) { return f.setGeometry(f.geometry().buffer(30)); }),
+    collection: sampled.map(function (f) { return f.setGeometry(f.geometry().buffer(RADIUS)); }),
     reducer: ee.Reducer.mean().combine(ee.Reducer.stdDev(), '', true),
     scale: 10, tileScale: 16
   }).map(function (f) { return f.setGeometry(f.geometry().centroid(1)); });
@@ -155,37 +157,45 @@ if (!EXPORTED) {
     var summary = ee.FeatureCollection(GROUPS.map(function (g) {
       var s = res.filter(ee.Filter.eq('group', g));
       var props = {group: g, n: s.size()};
-      metrics.forEach(function (m) { props[m] = s.aggregate_mean(m); });
+      // MEDIAN per group: not dragged around by outliers the way a mean is
+      metrics.forEach(function (m) {
+        props[m] = s.filter(ee.Filter.notNull([m]))
+                    .reduceColumns(ee.Reducer.median(), [m]).get('median');
+      });
       return ee.Feature(null, props);
     }));
     print(ui.Chart.feature.byFeature({features: summary, xProperty: 'group',
                                       yProperties: ['n'].concat(metrics)})
       .setChartType('Table')
-      .setOptions({title: '2. Group averages'}));
+      .setOptions({title: '2. Group medians'}));
     print('Key: height = canopy height (m, 2020) and height_stdDev = how uneven; ' +
           'ndvi_med = typical greenness; ndvi_p10 = low point (dips = harvest/clearing); ' +
           'ndvi_sd = how much greenness swings over ' + YEAR);
 
     // ---- Charts 3-4: scatter plots ------------------------------------------
-    // Sorted by group so the colours are the same in both charts:
-    // caught plantation = dark brown, missed plantation = orange, real forest = green
+    // One column per group, so colours are FIXED in both charts:
+    // missed plantation = orange, real forest = green, caught plantation = dark brown
     var clean = res.filter(ee.Filter.inList('group', GROUPS))
       .filter(ee.Filter.notNull(['height_mean', 'height_stdDev', 'ndvi_p10_mean', 'ndvi_sd_mean']))
-      .randomColumn('r', 1).sort('r').limit(4000)      // charts cap out around 5,000 points
-      .sort('group');
-    var seriesColors = ['7a5900', 'd68a00', '1f8d49'];
-    print(ui.Chart.feature.groups({features: clean, xProperty: 'height_mean',
-                                   yProperty: 'height_stdDev', seriesProperty: 'group'})
-      .setChartType('ScatterChart')
-      .setOptions({title: '3. Canopy height vs. unevenness', colors: seriesColors,
-                   hAxis: {title: 'Average canopy height (m)'},
-                   vAxis: {title: 'Height std dev (m)'}, pointSize: 3}));
-    print(ui.Chart.feature.groups({features: clean, xProperty: 'ndvi_p10_mean',
-                                   yProperty: 'ndvi_sd_mean', seriesProperty: 'group'})
-      .setChartType('ScatterChart')
-      .setOptions({title: '4. NDVI low point vs. NDVI swing', colors: seriesColors,
-                   hAxis: {title: 'NDVI 10th percentile'},
-                   vAxis: {title: 'NDVI std dev over the year'}, pointSize: 3}));
+      .randomColumn('r', 1).sort('r').limit(4000);     // charts cap out around 5,000 points
+
+    function scatter(xProp, yProp, title, xTitle, yTitle) {
+      var fc = clean.map(function (f) {
+        var g = f.get('group'), y = f.get(yProp), props = {};
+        GROUPS.forEach(function (name) {
+          props[name] = ee.Algorithms.If(ee.Algorithms.IsEqual(g, name), y, null);
+        });
+        return f.set(props);
+      });
+      print(ui.Chart.feature.byFeature({features: fc, xProperty: xProp, yProperties: GROUPS})
+        .setChartType('ScatterChart')
+        .setOptions({title: title, colors: ['d68a00', '1f8d49', '7a5900'],
+                     hAxis: {title: xTitle}, vAxis: {title: yTitle}, pointSize: 3}));
+    }
+    scatter('height_mean', 'height_stdDev', '3. Canopy height vs. unevenness',
+            'Average canopy height (m)', 'Height std dev (m)');
+    scatter('ndvi_p10_mean', 'ndvi_sd_mean', '4. NDVI low point vs. NDVI swing',
+            'NDVI 10th percentile', 'NDVI std dev over the year');
 
     // ---- Optional: CSV to Google Drive for Python/R ---------------------------
     // Export.table.toDrive({collection: res.select(['group', 'true_code', 'pred_code', 'code']
