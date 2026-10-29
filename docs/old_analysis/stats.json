@@ -1,0 +1,315 @@
+{
+ "nf_prob": {
+  "auc": [
+   0.718,
+   0.661,
+   0.773
+  ],
+  "p": "1.3e-12",
+  "plant_med": 0.443,
+  "forest_med": 0.76,
+  "plant_iqr": [
+   0.169,
+   0.715
+  ],
+  "forest_iqr": [
+   0.487,
+   0.886
+  ]
+ },
+ "height_mean": {
+  "auc": [
+   0.706,
+   0.649,
+   0.761
+  ],
+  "p": "2.3e-11",
+  "plant_med": 24.19,
+  "forest_med": 21.174,
+  "plant_iqr": [
+   21.407,
+   27.34
+  ],
+  "forest_iqr": [
+   17.722,
+   24.112
+  ]
+ },
+ "height_sd_30m": {
+  "auc": [
+   0.663,
+   0.607,
+   0.714
+  ],
+  "p": "1.2e-07",
+  "plant_med": 1.479,
+  "forest_med": 1.118,
+  "plant_iqr": [
+   1.039,
+   2.058
+  ],
+  "forest_iqr": [
+   0.712,
+   1.531
+  ]
+ },
+ "area_m2": {
+  "auc": [
+   0.504,
+   0.444,
+   0.562
+  ],
+  "p": "9.0e-01",
+  "plant_med": 274.564,
+  "forest_med": 270.825,
+  "plant_iqr": [
+   168.015,
+   783.574
+  ],
+  "forest_iqr": [
+   133.075,
+   692.14
+  ]
+ },
+ "n_class_changes": {
+  "auc": [
+   0.648,
+   0.6,
+   0.693
+  ],
+  "p": "1.8e-07",
+  "plant_med": 1.0,
+  "forest_med": 0.0,
+  "plant_iqr": [
+   0.0,
+   3.0
+  ],
+  "forest_iqr": [
+   0.0,
+   1.0
+  ]
+ },
+ "min_p10_17_24": {
+  "auc": [
+   0.515,
+   0.456,
+   0.573
+  ],
+  "p": "6.3e-01",
+  "plant_med": 0.58,
+  "forest_med": 0.604,
+  "plant_iqr": [
+   0.36,
+   0.675
+  ],
+  "forest_iqr": [
+   0.44,
+   0.662
+  ]
+ },
+ "mean_med": {
+  "auc": [
+   0.553,
+   0.491,
+   0.615
+  ],
+  "p": "8.3e-02",
+  "plant_med": 0.862,
+  "forest_med": 0.855,
+  "plant_iqr": [
+   0.843,
+   0.879
+  ],
+  "forest_iqr": [
+   0.837,
+   0.874
+  ]
+ },
+ "forest_all": {
+  "missed_pct": 50.0,
+  "forest_pct": 69.1,
+  "missed_n": 141,
+  "forest_n": 85,
+  "odds_ratio": 0.45,
+  "p": "4.7e-04"
+ },
+ "after2000": {
+  "missed_pct": 35.5,
+  "forest_pct": 20.3,
+  "missed_n": 100,
+  "forest_n": 25,
+  "odds_ratio": 2.15,
+  "p": "2.3e-03"
+ },
+ "farm_any": {
+  "missed_pct": 46.5,
+  "forest_pct": 30.1,
+  "missed_n": 131,
+  "forest_n": 37,
+  "odds_ratio": 2.02,
+  "p": "2.2e-03"
+ },
+ "nf_table": [
+  {
+   "t": 0.1,
+   "caught": 49,
+   "caught_pct": 15.8,
+   "lost": 6,
+   "lost_pct": 4.9
+  },
+  {
+   "t": 0.15,
+   "caught": 71,
+   "caught_pct": 22.9,
+   "lost": 7,
+   "lost_pct": 5.7
+  },
+  {
+   "t": 0.2,
+   "caught": 91,
+   "caught_pct": 29.4,
+   "lost": 12,
+   "lost_pct": 9.8
+  },
+  {
+   "t": 0.3,
+   "caught": 115,
+   "caught_pct": 37.1,
+   "lost": 19,
+   "lost_pct": 15.4
+  },
+  {
+   "t": 0.5,
+   "caught": 172,
+   "caught_pct": 55.5,
+   "lost": 32,
+   "lost_pct": 26.0
+  }
+ ],
+ "nf_missed_caught_015": 62,
+ "h_table": [
+  {
+   "t": 20,
+   "plant": 86.1,
+   "forest": 61.8
+  },
+  {
+   "t": 25,
+   "plant": 44.2,
+   "forest": 18.7
+  },
+  {
+   "t": 30,
+   "plant": 9.4,
+   "forest": 3.3
+  }
+ ],
+ "dip": {
+  "plant": 36.5,
+  "forest": 34.1,
+  "p": "0.74"
+ },
+ "ndvi_years": {
+  "2017": {
+   "pl_med": 0.864,
+   "fo_med": 0.865,
+   "pl_p10": 0.813,
+   "fo_p10": 0.813,
+   "n_obs": 5.0
+  },
+  "2018": {
+   "pl_med": 0.873,
+   "fo_med": 0.871,
+   "pl_p10": 0.807,
+   "fo_p10": 0.818,
+   "n_obs": 10.0
+  },
+  "2019": {
+   "pl_med": 0.861,
+   "fo_med": 0.857,
+   "pl_p10": 0.726,
+   "fo_p10": 0.722,
+   "n_obs": 30.0
+  },
+  "2020": {
+   "pl_med": 0.858,
+   "fo_med": 0.853,
+   "pl_p10": 0.733,
+   "fo_p10": 0.743,
+   "n_obs": 36.6
+  },
+  "2021": {
+   "pl_med": 0.863,
+   "fo_med": 0.853,
+   "pl_p10": 0.727,
+   "fo_p10": 0.72,
+   "n_obs": 32.0
+  },
+  "2022": {
+   "pl_med": 0.858,
+   "fo_med": 0.846,
+   "pl_p10": 0.771,
+   "fo_p10": 0.763,
+   "n_obs": 28.0
+  },
+  "2023": {
+   "pl_med": 0.871,
+   "fo_med": 0.86,
+   "pl_p10": 0.775,
+   "fo_p10": 0.771,
+   "n_obs": 29.0
+  },
+  "2024": {
+   "pl_med": 0.864,
+   "fo_med": 0.861,
+   "pl_p10": 0.68,
+   "fo_p10": 0.689,
+   "n_obs": 25.5
+  },
+  "2025": {
+   "pl_med": 0.872,
+   "fo_med": 0.862,
+   "pl_p10": 0.781,
+   "fo_p10": 0.756,
+   "n_obs": 35.3
+  }
+ },
+ "combos": {
+  "Natural Forests prob": [
+   0.711,
+   0.003
+  ],
+  "Canopy height": [
+   0.702,
+   0.002
+  ],
+  "Land history (class changes)": [
+   0.634,
+   0.007
+  ],
+  "NF + height": [
+   0.798,
+   0.003
+  ],
+  "NF + height + variability + history": [
+   0.824,
+   0.004
+  ]
+ },
+ "combo_at_5pct_forest_lost": [
+  0.91,
+  36.5,
+  4.9
+ ],
+ "nf_at_5pct": [
+  15.8,
+  4.9
+ ],
+ "coef_std": {
+  "nf_prob": -0.77,
+  "height_mean": 0.98,
+  "height_sd_30m": 0.3,
+  "n_class_changes": 0.93,
+  "n_yrs_forest": 0.24
+ }
+}
