@@ -18,6 +18,7 @@ many are **plantation harvests** (eucalyptus, pine), not deforestation. Goal: an
 | `data_exploration/` | Teammates' GEE scripts, `qc_map.html`, first notebook. **Don't edit others' files.** |
 | `gee/01_*.js`, `gee/02_*.js` | Meera's exploration, and the export that makes `qc_error_analysis_A/B` |
 | `gee/03_*.js` | Applies Cropin's forest layer and SAG to the QC polygons → `qc_cropin_layers.csv`, `qc_sag_timeseries.csv` |
+| `gee/04_*.js` | SAG time series on the 2,290 MapBiomas reference points → `ref_sag_timeseries_{PR,SC,RS}.csv` |
 | `gee/cropin/` | Cropin's own scripts, **verbatim** (forest layer, SAG posterior, SAG explorer). Plain-language guide in its README |
 | `gee/archive/` | Superseded GEE versions (memory errors) |
 | `data/` | Local-only data. `data/README.md` is the full data dictionary |
@@ -25,7 +26,8 @@ many are **plantation harvests** (eucalyptus, pine), not deforestation. Goal: an
 | `src/build_mapbiomas_ref_south.py` | Rebuilds and checks the 2,290-point MapBiomas reference subset |
 | `notebooks/01_qc_error_analysis.ipynb` | Benchmark, findings 1–6, combined model, reproducibility check |
 | `notebooks/02_cropin_layers_and_SAG.ipynb` | Cropin layer and MapBiomas 10 m benchmark, SAG validation, Meta 1 m, SAG in the model |
-| `figures/` | PNGs written by the notebooks (`01*`, `02*`) |
+| `notebooks/03_sag_on_mapbiomas_reference.ipynb` | SAG on the independent MapBiomas reference points; does the cutoff transfer to the QC set |
+| `figures/` | PNGs written by the notebooks (`01*`, `02*`, `03*`) |
 | `docs/eda_findings.md` | One-page team summary with current numbers |
 | `docs/old_analysis/` | Aggregate stats from the old quick scripts (for the reproducibility check) |
 
@@ -37,7 +39,7 @@ many are **plantation harvests** (eucalyptus, pine), not deforestation. Goal: an
 - **MapBiomas 85k validation points** (shared by Deepak):
   - files: `data/raw/mapbiomas_validation/` (209 MB `.dbf`);
   - the LON/LAT columns are swapped, so use the geometry.
-- **GEE exports:** `data/gee_exports/*.csv` (four files).
+- **GEE exports:** `data/gee_exports/*.csv` (seven files: four QC, three reference-point SAG).
 
 **GEE project `cropin-510901`** assets:
 - `projects/cropin-510901/assets/cropin_qc`
@@ -90,13 +92,14 @@ many are **plantation harvests** (eucalyptus, pine), not deforestation. Goal: an
 ## How to rerun everything
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-# 1. GEE (only if the exports need refreshing): run gee/02 and gee/03 in the Code Editor
+# 1. GEE (only if the exports need refreshing): run gee/02, gee/03 and gee/04 in the Code Editor
 #    (project cropin-510901), RUN the tasks, download from Drive/cropin_exports to data/gee_exports/
 # 2. optional check of the reference subset
 .venv/bin/python src/build_mapbiomas_ref_south.py
 # 3. notebooks (about 30 s each)
 .venv/bin/jupyter nbconvert --to notebook --execute --inplace notebooks/01_qc_error_analysis.ipynb
 .venv/bin/jupyter nbconvert --to notebook --execute --inplace notebooks/02_cropin_layers_and_SAG.ipynb
+.venv/bin/jupyter nbconvert --to notebook --execute --inplace notebooks/03_sag_on_mapbiomas_reference.ipynb
 ```
 **macOS note:** NumPy 2 with Accelerate prints spurious "matmul" RuntimeWarnings from sklearn. The
 notebooks filter them, and `cv_evaluate` asserts that predictions are finite.
@@ -109,4 +112,6 @@ notebooks filter them, and `cv_evaluate` asserts that predictions are finite.
 - **Notebook-01 model:** spatial CV AUC 0.81. Removes about 30% of false alarms at ≤ 5% forest
   hidden. The midterm's 36.5% was a lucky split.
 - **SAG Oct–Jan mean:** AUC 0.87. Adding it to the model gives AUC 0.89 and about 49% removed.
+- **SAG on the 2,290 MapBiomas reference points:** AUC 0.90, so the signal replicates. But the cutoff
+  doesn't transfer: one that hides 5% of reference forest hides 14% of QC forest.
 - **Cropin's posterior ≥ 0.8:** 68% caught, but 16% of forest flagged.

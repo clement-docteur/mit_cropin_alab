@@ -1,10 +1,11 @@
-# QC error analysis: findings so far (Meera, 2026-10-29)
+# QC error analysis: findings so far (Meera, updated 2026-11-04)
 
 **Data.** Cropin's 433 hand-checked alerts: 310 plantation harvests (false alarms) and 123 real
 deforestation. Every case was already called forest by Cropin's layer and already cleared, so the
 sample is **biased and pre-filtered**. 13 rows repeat another polygon exactly; results barely
 change without them. Everything below is **exploratory**: features were chosen on these same
-cases. Full working: `notebooks/01_qc_error_analysis.ipynb` and `02_cropin_layers_and_SAG.ipynb`.
+cases. Full working: `notebooks/01_qc_error_analysis.ipynb`, `02_cropin_layers_and_SAG.ipynb` and
+`03_sag_on_mapbiomas_reference.ipynb` (SAG on independent data).
 
 **How to read the numbers.**
 - **AUC**: the chance a random plantation scores more plantation-like than a random forest (0.5 = coin flip).
@@ -35,7 +36,7 @@ information adds on top.
 | 4 | MapBiomas land history | missed plantations are less often forest every year (50% vs 69%, OR 0.45) and more often ex-farmland (46% vs 30%, OR 2.0) | significant |
 | 5 | Patch size | no difference (AUC 0.50) | n.s. |
 | 6 | Yearly NDVI | no dips difference (AUC 0.51); tiny greenness difference | dips n.s. |
-| new | **SAG, Oct–Jan mean** (Cropin) | **AUC 0.87 [0.83–0.91]**; winter (Jun–Aug) 0.78; robust to dropping the 2025/26 season | significant |
+| new | **SAG, Oct–Jan mean** (Cropin) | **AUC 0.87 [0.83–0.91]**; winter (Jun–Aug) 0.78; robust to dropping the 2025/26 season. **Replicates on independent data: AUC 0.90** (see below) | significant |
 
 ## Combined model (logistic regression, standardized features)
 | Model | Spatial CV AUC | Removed at ≤ 5% forest hidden |
@@ -60,9 +61,24 @@ information adds on top.
 - **Dark native pine.** The 20 forests SAG wrongly flags lean towards "forest every year", but
   land history doesn't significantly separate them.
 
+## SAG on independent data (notebook 03)
+Tested on the **2,290 MapBiomas reference points** in PR/SC/RS (1,762 forest, 528 plantation; human-
+interpreted, same class in 2016, 2020 and 2022), with the same SAG settings as on the QC set and each
+point widened to a 15 m circle. These are a landscape sample, not alerts.
+- **The ranking replicates.** Oct–Jan mean AUC **0.895 [0.88–0.91]** (QC: 0.87). The class medians
+  are nearly identical to the QC set (plantation about 159–160°, forest about 152°).
+- **Robust.** Seasons up to 2022/23 only: 0.89. Per state: RS 0.94, PR 0.88, SC 0.86. High-confidence
+  points 0.93 vs 0.84 for the rest (some of SAG's error is label noise). Winter is weaker (0.69).
+- **The cutoff does not transfer.** A cutoff that hides 5% of reference forest (159.4°) hides **14% of
+  QC forest** (17/123, CI 8–21%). Typical forest looks the same in both sets, but QC forests have a heavier
+  plantation-like tail (90th percentile 160° vs 157°), likely the dark native pine cases.
+- **So:** SAG is a real signal, not a QC quirk, but the operating **cutoff must be set on a sample of
+  alerts**, not on the general landscape.
+
 ## Caveats
 - **Biased, small sample.** Precision depends on the unknown real class mix, and "5% of forest" is
-  6 polygons.
+  6 polygons. The reference points (notebook 03) are independent but are not alerts either. An unbiased
+  estimate needs a random, blindly labelled sample of alerts.
 - **Measurement limits.** MapBiomas modes are 30 m on sub-pixel polygons. ETH is from 2020 and the
   clearings from 2026. Meta heights are low (median 8 m) and have mixed dates.
 - **The QC alerts only partly match Cropin's shared layer.** Only 55% of plantations pass its final
@@ -73,9 +89,13 @@ information adds on top.
   - which forest-layer version and year produced the alerts;
   - why 12 polygons are repeated;
   - the CCDC script;
-  - a week of fresh alerts.
+  - a week of fresh alerts (unfiltered, so a random sample can be labelled blind and the cutoff set
+    on alerts).
 - **Ask Julia:** confirm 10 m C4 2025 and the 14 dropped cases, and build one shared feature table.
 - **Next analyses:**
-  - validate SAG + features on the 2,290 MapBiomas reference points;
+  - ~~validate SAG on the 2,290 MapBiomas reference points~~ done (notebook 03). The other features
+    can't be tested there fairly: most use MapBiomas history, which is also the source of the labels;
+  - compare with Julia's `sag_oct_nov_mean` (window Oct–Nov vs our Oct–Jan);
+  - build a random alert sample (from Cropin or rebuilt in GEE) and label it blind;
   - map a small region of interest and inspect it, especially for dark native pine;
   - try CCDC / harvest-cycle features.

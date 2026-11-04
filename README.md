@@ -30,7 +30,8 @@ deforestation, and does Cropin's SAG plantation signal work on labelled cases?
 - **One-page summary for the team:** [`docs/eda_findings.md`](docs/eda_findings.md)
 - **Notebook 01:** [`notebooks/01_qc_error_analysis.ipynb`](notebooks/01_qc_error_analysis.ipynb). The MapBiomas benchmark, six single-feature findings and a combined model. Statistics: Mann–Whitney / Fisher, bootstrap CIs, Holm correction, spatially blocked CV, nested threshold.
 - **Notebook 02:** [`notebooks/02_cropin_layers_and_SAG.ipynb`](notebooks/02_cropin_layers_and_SAG.ipynb). Cropin's forest layer and MapBiomas 10 m benchmarks, the first SAG validation, Meta 1 m height, and SAG added to the model.
-- **Earth Engine:** `gee/02_qc_error_analysis_export.js` and `gee/03_cropin_layers_and_SAG_qc_export.js` produce the CSVs. Cropin's scripts are explained in `gee/cropin/README.md`.
+- **Notebook 03:** [`notebooks/03_sag_on_mapbiomas_reference.ipynb`](notebooks/03_sag_on_mapbiomas_reference.ipynb). SAG tested on 2,290 independent MapBiomas reference points, and whether its cutoff transfers to the QC set.
+- **Earth Engine:** `gee/02_qc_error_analysis_export.js`, `gee/03_cropin_layers_and_SAG_qc_export.js` and `gee/04_sag_mapbiomas_ref_export.js` produce the CSVs. Cropin's scripts are explained in `gee/cropin/README.md`.
 
 ### Rerun
 ```bash
@@ -39,5 +40,6 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python src/build_mapbiomas_ref_south.py          # optional: rebuild and check the reference subset
 .venv/bin/jupyter nbconvert --to notebook --execute --inplace notebooks/01_qc_error_analysis.ipynb
 .venv/bin/jupyter nbconvert --to notebook --execute --inplace notebooks/02_cropin_layers_and_SAG.ipynb
+.venv/bin/jupyter nbconvert --to notebook --execute --inplace notebooks/03_sag_on_mapbiomas_reference.ipynb
 ```
 Seeds are fixed, so the notebooks reproduce exactly. Each takes under a minute.

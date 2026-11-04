@@ -9,7 +9,7 @@
 | `raw/cropin_qc/` | `cropin_brazil_qc_forest_plantation_1.geojson`: 433 QC polygons, property `qc_label` (310 plantation, 123 forest) | Cropin (sponsor) | No |
 | `raw/mapbiomas_validation/` | MapBiomas 85k validation points shapefile (209 MB `.dbf`) | MapBiomas, shared by Deepak (Cropin) | No (too large) |
 | `gee_assets/` | `cropin_qc.zip` (QC polygons with an added `id` 0–432) and `mapbiomas_ref_south.zip` (2,290 southern reference points), as uploaded to Earth Engine | Built by us | No |
-| `gee_exports/` | The four CSVs exported from Earth Engine (described below) | `gee/02_*.js`, `gee/03_*.js` | No |
+| `gee_exports/` | The seven CSVs exported from Earth Engine (described below) | `gee/02_*.js`, `gee/03_*.js`, `gee/04_*.js` | No |
 | `processed/` | `qc_features.csv` (notebook 01), `mapbiomas_ref_south.{gpkg,csv}` (`src/build_mapbiomas_ref_south.py`) | Derived | No |
 
 Earth Engine assets, project `cropin-510901`:
@@ -87,6 +87,16 @@ pixels kept only if B2, B3 and B4 reflectance are all ≤ 0.05 (dark vegetation,
 | `date` | YYYY-MM-DD | Image date |
 | `tile` | – | Sentinel-2 MGRS tile. Polygons in tile overlaps appear **twice on the same date** (10,837 duplicate id-date pairs) |
 | `mean` | degrees | SAG (Spectral Angle at Green): angle at the green band between vectors to blue and red, polygon mean of valid pixels. Higher = flatter visible spectrum = darker green |
+| `count` | pixels | Number of valid 10 m pixels used |
+
+### `gee_exports/ref_sag_timeseries_{PR,SC,RS}.csv` (from `gee/04_sag_mapbiomas_ref_export.js`)
+Same SAG settings as `qc_sag_timeseries.csv`, on the 2,290 MapBiomas reference points (asset
+`mapbiomas_ref_south`), each buffered by 15 m. One file per state; 620,368 rows in total, 2019-01-01 to 2026-01-31.
+| Column | Unit | Definition |
+|---|---|---|
+| `id`, `label`, `state`, `high_conf` | – | As in `processed/mapbiomas_ref_south.csv` |
+| `date`, `tile` | – | As in `qc_sag_timeseries.csv` (tile overlaps give two rows per id-date) |
+| `mean` | degrees | SAG, mean of the valid pixels in the 15 m circle |
 | `count` | pixels | Number of valid 10 m pixels used |
 
 ### `processed/qc_features.csv` (written by `notebooks/01_qc_error_analysis.ipynb`)
