@@ -1,0 +1,4 @@
+tolerance_years,val_forest_protected,val_plant_vetoed,mb_forest_calls_cancelled,mb_forest_calls,mb_correct_calls_lost,mb_correct_calls,qc_forest_protected,qc_plant_vetoed,base (no MapBiomas history): forest flags,base (no MapBiomas history): forest flags vetoed,base (no MapBiomas history): plantation flags,base (no MapBiomas history): plantation flags vetoed,base + H-all: forest flags,base + H-all: forest flags vetoed,base + H-all: plantation flags,base + H-all: plantation flags vetoed
+0,0.4472182596291013,0.016317016317016316,29,72,5,369,0.3008130081300813,0.06129032258064516,69,22,250,3,69,0,378,0
+1,0.5670470756062768,0.02564102564102564,37,72,9,369,0.4065040650406504,0.12580645161290321,69,29,250,5,69,0,378,1
+2,0.6219686162624821,0.03263403263403263,39,72,10,369,0.5040650406504065,0.14193548387096774,69,34,250,8,69,0,378,1

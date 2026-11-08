@@ -1,0 +1,579 @@
+VAL n=1831 (plantation 429), QC n=433 (plantation 310)
+VAL groups: {'real forest': 1260, 'caught plantation': 369, 'other': 90, 'forest called plantation': 72, 'missed plantation': 40}
+
+=== 1. Landsat coverage and calibration
+clear obs per point-year: median 6, mean 5.67; point-years with none: 0.004
+share of points with no clear observation, worst years: {'1998': 0.096, '1985': 0.009, '1994': 0.009, '1987': 0.006, '1992': 0.005, '1989': 0.004}
+points with < 25 of 36 years observed: 0
+sensor offsets (subtracted):
+index  oli_minus_etm  n_pairs_oli  oli_ci_low  oli_ci_high  tm_minus_etm  n_pairs_tm  tm_ci_low  tm_ci_high
+  nbr        -0.0013         8066     -0.0023      -0.0005       -0.0074       17601    -0.0082     -0.0066
+ ndvi         0.0331         8066      0.0320       0.0337       -0.0305       17601    -0.0312     -0.0297
+calibration (label-free, Hansen closed canopy):
+index        agg  n_closed_points  n_open_points  open_p25  open_median  closed_median  closed_p5  closed_p1  open_level  all_p5  all_median  share_all_below_forest  share_all_below_open
+  nbr     median             1342             79     0.405        0.511          0.706      0.584      0.493       0.405   0.415       0.685                   0.192                 0.045
+  nbr        max             1342             79     0.553        0.640          0.753      0.663      0.598       0.553   0.556       0.742                   0.168                 0.048
+  nbr        p75             1342             79     0.488        0.575          0.730      0.626      0.550       0.488   0.488       0.714                   0.183                 0.050
+  nbr dry_median             1342             79     0.354        0.469          0.685      0.533      0.427       0.354   0.376       0.666                   0.168                 0.041
+  nbr wet_median             1342             79     0.430        0.557          0.720      0.595      0.501       0.430   0.425       0.697                   0.187                 0.052
+ ndvi     median             1342             79     0.521        0.581          0.710      0.601      0.531       0.521   0.492       0.684                   0.188                 0.072
+ ndvi        max             1342             79     0.610        0.679          0.765      0.683      0.633       0.608   0.601       0.747                   0.178                 0.056
+ ndvi        p75             1342             79     0.565        0.639          0.741      0.648      0.591       0.565   0.548       0.718                   0.193                 0.063
+ ndvi dry_median             1342             79     0.444        0.539          0.672      0.520      0.404       0.444   0.423       0.647                   0.144                 0.064
+ ndvi wet_median             1342             79     0.550        0.632          0.741      0.638      0.562       0.550   0.528       0.716                   0.189                 0.064
+
+=== 2. Which way of using the time series separates best? (all configurations, default thresholds)
+
+[val] sorted by AUC of n_cuts
+index        agg method  tpr_cut  fpr_cut  tpr_cycle  fpr_cycle  auc_n_cuts  auc_max_drop  stable_forest_share  stable_plant_share
+  nbr wet_median      R    0.821    0.134      0.762      0.128       0.865         0.898                0.387               0.007
+  nbr dry_median      R    0.862    0.252      0.816      0.239       0.848         0.897                0.432               0.014
+  nbr     median      R    0.767    0.118      0.713      0.116       0.841         0.912                0.446               0.012
+  nbr     median      S    0.765    0.139      0.718      0.138       0.837         0.912                0.447               0.016
+  nbr wet_median      S    0.779    0.188      0.727      0.185       0.829         0.898                0.387               0.007
+  nbr dry_median      S    0.781    0.210      0.746      0.201       0.822         0.897                0.448               0.019
+  nbr        p75      R    0.690    0.069      0.634      0.067       0.819         0.912                0.484               0.023
+  nbr        p75      S    0.692    0.081      0.643      0.079       0.815         0.912                0.484               0.026
+  nbr     median     S6    0.653    0.113      0.564      0.111       0.778         0.912                0.447               0.016
+ ndvi     median      S    0.699    0.213      0.653      0.210       0.771         0.794                0.321               0.019
+ ndvi wet_median      R    0.704    0.223      0.646      0.218       0.771         0.796                0.244               0.021
+  nbr        max      R    0.613    0.094      0.552      0.078       0.767         0.861                0.458               0.047
+  nbr        max      S    0.601    0.091      0.545      0.082       0.765         0.861                0.468               0.049
+ ndvi     median      R    0.702    0.233      0.655      0.230       0.752         0.794                0.320               0.019
+ ndvi        p75      R    0.594    0.127      0.524      0.126       0.740         0.801                0.332               0.030
+ ndvi        p75      S    0.613    0.158      0.555      0.156       0.740         0.801                0.332               0.030
+ ndvi dry_median      R    0.828    0.453      0.788      0.446       0.737         0.766                0.304               0.028
+ ndvi wet_median      S    0.669    0.285      0.615      0.282       0.724         0.796                0.245               0.021
+ ndvi dry_median      S    0.730    0.372      0.678      0.364       0.723         0.766                0.293               0.033
+ ndvi        max      R    0.501    0.108      0.450      0.104       0.701         0.768                0.354               0.058
+ ndvi        max      S    0.508    0.148      0.462      0.143       0.686         0.768                0.354               0.058
+
+[qc] sorted by AUC of n_cuts
+index        agg method  tpr_cut  fpr_cut  tpr_cycle  fpr_cycle  auc_n_cuts  auc_max_drop  stable_forest_share  stable_plant_share
+  nbr wet_median      S    0.442    0.195      0.435      0.195       0.634         0.696                0.228               0.035
+  nbr dry_median      R    0.581    0.366      0.568      0.350       0.624         0.655                0.293               0.084
+  nbr wet_median      R    0.448    0.220      0.435      0.220       0.623         0.696                0.228               0.035
+  nbr     median      R    0.355    0.163      0.348      0.163       0.595         0.703                0.301               0.061
+  nbr dry_median      S    0.452    0.293      0.448      0.260       0.588         0.655                0.317               0.094
+  nbr     median      S    0.348    0.195      0.342      0.187       0.575         0.703                0.301               0.061
+  nbr        p75      R    0.235    0.089      0.235      0.089       0.573         0.706                0.333               0.090
+ ndvi        max      R    0.242    0.098      0.226      0.089       0.572         0.659                0.244               0.116
+ ndvi dry_median      R    0.552    0.439      0.535      0.439       0.572         0.550                0.268               0.155
+  nbr        p75      S    0.252    0.106      0.242      0.106       0.570         0.706                0.333               0.090
+ ndvi wet_median      R    0.355    0.236      0.345      0.228       0.568         0.599                0.203               0.052
+  nbr        max      R    0.206    0.081      0.187      0.073       0.563         0.694                0.358               0.077
+  nbr        max      S    0.210    0.098      0.190      0.081       0.558         0.694                0.366               0.077
+  nbr     median     S6    0.258    0.138      0.245      0.122       0.558         0.703                0.301               0.061
+ ndvi     median      R    0.361    0.260      0.348      0.260       0.556         0.618                0.260               0.081
+ ndvi        p75      R    0.219    0.114      0.206      0.114       0.553         0.621                0.236               0.090
+ ndvi        max      S    0.226    0.130      0.210      0.122       0.550         0.659                0.244               0.116
+ ndvi wet_median      S    0.387    0.325      0.377      0.325       0.540         0.599                0.203               0.052
+ ndvi     median      S    0.281    0.220      0.274      0.211       0.533         0.618                0.260               0.094
+ ndvi        p75      S    0.206    0.146      0.197      0.138       0.531         0.621                0.236               0.090
+ ndvi dry_median      S    0.406    0.390      0.397      0.374       0.517         0.550                0.301               0.148
+
+Paired AUC differences (A - B), 95% CI resampling municipalities (VAL) / 0.1-degree cells (QC):
+                                    comparison dataset  auc_a  auc_b   diff  ci_lo  ci_hi
+                   NBR vs NDVI (median, rules)     val  0.841  0.752  0.089  0.068  0.113
+                   NBR vs NDVI (median, rules)      qc  0.595  0.556  0.039 -0.014  0.089
+            NBR vs NDVI (median, segmentation)     val  0.837  0.771  0.066  0.042  0.092
+            NBR vs NDVI (median, segmentation)      qc  0.575  0.533  0.042 -0.013  0.096
+           rules vs segmentation (NBR, median)     val  0.841  0.837  0.005 -0.013  0.023
+           rules vs segmentation (NBR, median)      qc  0.595  0.575  0.020 -0.026  0.062
+        segmentation cap 18 vs 6 (NBR, median)     val  0.837  0.778  0.058  0.041  0.078
+        segmentation cap 18 vs 6 (NBR, median)      qc  0.575  0.558  0.017 -0.017  0.050
+           median vs dry-season median (rules)     val  0.841  0.848 -0.007 -0.025  0.011
+           median vs dry-season median (rules)      qc  0.595  0.624 -0.029 -0.084  0.023
+           median vs wet-season median (rules)     val  0.841  0.865 -0.024 -0.045 -0.002
+           median vs wet-season median (rules)      qc  0.595  0.623 -0.028 -0.072  0.015
+                  median vs yearly max (rules)     val  0.841  0.767  0.074  0.049  0.101
+                  median vs yearly max (rules)      qc  0.595  0.563  0.031 -0.022  0.085
+largest 3-year drop vs cut count (NBR, median)     val  0.912  0.837  0.075  0.059  0.092
+largest 3-year drop vs cut count (NBR, median)      qc  0.703  0.575  0.128  0.089  0.167
+    NBR variability vs cut count (NBR, median)     val  0.968  0.837  0.132  0.111  0.154
+    NBR variability vs cut count (NBR, median)      qc  0.763  0.575  0.188  0.138  0.233
+[qc] hansen_loss_le2020: plantation 0.100, forest 0.016, AUC 0.542
+[qc] hansen_gain: plantation 0.048, forest 0.008, AUC 0.520
+[qc] hansen_loss3x3_le2020: plantation 0.365, forest 0.106, AUC 0.629
+[val] hansen_loss_le2020: plantation 0.513, forest 0.016, AUC 0.749
+[val] hansen_gain: plantation 0.490, forest 0.003, AUC 0.743
+[val] hansen_loss3x3_le2020: plantation 0.618, forest 0.072, AUC 0.773
+
+=== 3. Sensitivity of 'at least one cut' to the drop threshold and segmentation penalty (NBR, median)
+dataset method  max_segments  pen  drop   tpr   fpr   auc
+     qc      R           NaN  NaN  0.10 0.906 0.610 0.711
+     qc      R           NaN  NaN  0.15 0.645 0.366 0.663
+     qc      R           NaN  NaN  0.20 0.355 0.163 0.595
+     qc      R           NaN  NaN  0.25 0.177 0.089 0.545
+     qc      R           NaN  NaN  0.30 0.071 0.016 0.527
+     qc      S           6.0  0.5  0.10 0.790 0.577 0.621
+     qc      S           6.0  0.5  0.15 0.632 0.317 0.652
+     qc      S           6.0  0.5  0.20 0.423 0.203 0.606
+     qc      S           6.0  0.5  0.25 0.245 0.171 0.536
+     qc      S           6.0  0.5  0.30 0.110 0.065 0.522
+     qc      S           6.0  1.0  0.10 0.471 0.309 0.579
+     qc      S           6.0  1.0  0.15 0.397 0.203 0.592
+     qc      S           6.0  1.0  0.20 0.258 0.138 0.558
+     qc      S           6.0  1.0  0.25 0.152 0.114 0.519
+     qc      S           6.0  1.0  0.30 0.071 0.049 0.511
+     qc      S           6.0  2.0  0.10 0.077 0.024 0.526
+     qc      S           6.0  2.0  0.15 0.071 0.024 0.523
+     qc      S           6.0  2.0  0.20 0.048 0.024 0.512
+     qc      S           6.0  2.0  0.25 0.026 0.024 0.501
+     qc      S           6.0  2.0  0.30 0.013 0.008 0.502
+     qc      S          12.0  0.5  0.10 0.923 0.740 0.678
+     qc      S          12.0  0.5  0.15 0.732 0.374 0.680
+     qc      S          12.0  0.5  0.20 0.497 0.211 0.642
+     qc      S          12.0  0.5  0.25 0.261 0.130 0.566
+     qc      S          12.0  0.5  0.30 0.113 0.033 0.540
+     qc      S          12.0  1.0  0.10 0.571 0.374 0.610
+     qc      S          12.0  1.0  0.15 0.477 0.260 0.602
+     qc      S          12.0  1.0  0.20 0.335 0.187 0.574
+     qc      S          12.0  1.0  0.25 0.184 0.146 0.519
+     qc      S          12.0  1.0  0.30 0.077 0.041 0.518
+     qc      S          12.0  2.0  0.10 0.081 0.024 0.528
+     qc      S          12.0  2.0  0.15 0.074 0.024 0.525
+     qc      S          12.0  2.0  0.20 0.052 0.024 0.513
+     qc      S          12.0  2.0  0.25 0.029 0.024 0.502
+     qc      S          12.0  2.0  0.30 0.013 0.008 0.502
+     qc      S          18.0  0.5  0.10 0.932 0.732 0.694
+     qc      S          18.0  0.5  0.15 0.723 0.390 0.675
+     qc      S          18.0  0.5  0.20 0.465 0.203 0.629
+     qc      S          18.0  0.5  0.25 0.261 0.122 0.568
+     qc      S          18.0  0.5  0.30 0.116 0.049 0.534
+     qc      S          18.0  1.0  0.10 0.616 0.407 0.623
+     qc      S          18.0  1.0  0.15 0.510 0.268 0.618
+     qc      S          18.0  1.0  0.20 0.348 0.195 0.575
+     qc      S          18.0  1.0  0.25 0.197 0.138 0.528
+     qc      S          18.0  1.0  0.30 0.084 0.033 0.526
+     qc      S          18.0  2.0  0.10 0.081 0.024 0.528
+     qc      S          18.0  2.0  0.15 0.074 0.024 0.525
+     qc      S          18.0  2.0  0.20 0.052 0.024 0.513
+     qc      S          18.0  2.0  0.25 0.029 0.024 0.502
+     qc      S          18.0  2.0  0.30 0.013 0.008 0.502
+    val      R           NaN  NaN  0.10 0.979 0.566 0.849
+    val      R           NaN  NaN  0.15 0.895 0.262 0.873
+    val      R           NaN  NaN  0.20 0.767 0.118 0.841
+    val      R           NaN  NaN  0.25 0.667 0.053 0.812
+    val      R           NaN  NaN  0.30 0.543 0.029 0.759
+    val      S           6.0  0.5  0.10 0.881 0.514 0.723
+    val      S           6.0  0.5  0.15 0.821 0.285 0.792
+    val      S           6.0  0.5  0.20 0.737 0.150 0.805
+    val      S           6.0  0.5  0.25 0.639 0.084 0.783
+    val      S           6.0  0.5  0.30 0.538 0.044 0.750
+    val      S           6.0  1.0  0.10 0.737 0.265 0.756
+    val      S           6.0  1.0  0.15 0.706 0.180 0.777
+    val      S           6.0  1.0  0.20 0.653 0.113 0.778
+    val      S           6.0  1.0  0.25 0.585 0.068 0.763
+    val      S           6.0  1.0  0.30 0.499 0.040 0.732
+    val      S           6.0  2.0  0.10 0.380 0.052 0.666
+    val      S           6.0  2.0  0.15 0.375 0.046 0.667
+    val      S           6.0  2.0  0.20 0.354 0.036 0.661
+    val      S           6.0  2.0  0.25 0.333 0.026 0.654
+    val      S           6.0  2.0  0.30 0.312 0.018 0.648
+    val      S          12.0  0.5  0.10 0.979 0.645 0.832
+    val      S          12.0  0.5  0.15 0.918 0.325 0.870
+    val      S          12.0  0.5  0.20 0.823 0.168 0.856
+    val      S          12.0  0.5  0.25 0.695 0.081 0.816
+    val      S          12.0  0.5  0.30 0.573 0.043 0.769
+    val      S          12.0  1.0  0.10 0.830 0.330 0.811
+    val      S          12.0  1.0  0.15 0.797 0.217 0.827
+    val      S          12.0  1.0  0.20 0.741 0.134 0.825
+    val      S          12.0  1.0  0.25 0.648 0.081 0.793
+    val      S          12.0  1.0  0.30 0.541 0.044 0.752
+    val      S          12.0  2.0  0.10 0.427 0.053 0.691
+    val      S          12.0  2.0  0.15 0.422 0.046 0.691
+    val      S          12.0  2.0  0.20 0.401 0.036 0.685
+    val      S          12.0  2.0  0.25 0.380 0.027 0.678
+    val      S          12.0  2.0  0.30 0.359 0.019 0.671
+    val      S          18.0  0.5  0.10 0.981 0.648 0.846
+    val      S          18.0  0.5  0.15 0.923 0.322 0.879
+    val      S          18.0  0.5  0.20 0.802 0.162 0.847
+    val      S          18.0  0.5  0.25 0.685 0.076 0.813
+    val      S          18.0  0.5  0.30 0.571 0.041 0.768
+    val      S          18.0  1.0  0.10 0.869 0.354 0.836
+    val      S          18.0  1.0  0.15 0.837 0.231 0.851
+    val      S          18.0  1.0  0.20 0.765 0.139 0.837
+    val      S          18.0  1.0  0.25 0.664 0.079 0.802
+    val      S          18.0  1.0  0.30 0.559 0.040 0.763
+    val      S          18.0  2.0  0.10 0.427 0.053 0.691
+    val      S          18.0  2.0  0.15 0.422 0.046 0.691
+    val      S          18.0  2.0  0.20 0.401 0.036 0.685
+    val      S          18.0  2.0  0.25 0.380 0.027 0.678
+    val      S          18.0  2.0  0.30 0.359 0.019 0.671
+
+=== 4. Univariate significance, primary configuration (NBR, annual median, segmentation)
+Abrupt start vs the open-land level (NBR, yearly median):
+ open_level  calibrated dataset  plant_rate  forest_rate  p_fisher
+      0.300       False     val      0.1515       0.0021    0.0000
+      0.300       False      qc      0.0258       0.0000    0.1121
+      0.350       False     val      0.2448       0.0043    0.0000
+      0.350       False      qc      0.0581       0.0163    0.0752
+      0.405        True     val      0.4452       0.0107    0.0000
+      0.405        True      qc      0.1387       0.0407    0.0022
+      0.400       False     val      0.4172       0.0093    0.0000
+      0.400       False      qc      0.1355       0.0407    0.0033
+      0.450       False     val      0.5688       0.0350    0.0000
+      0.450       False      qc      0.2613       0.0813    0.0000
+dataset                            feature       kind  plant_rate  forest_rate  plant_n  forest_n       OR    OR_lo    OR_hi  p_fisher  p_cluster    auc  auc_lo  auc_hi  plant_median  forest_median  p_mannwhitney                       direction
+    val                            has_cut     binary      0.7646       0.1391    328.0     195.0  20.1013  15.3526  26.3189    0.0000     0.0000 0.8127  0.7904  0.8344           NaN            NaN            NaN                             NaN
+    val                          has_cycle     binary      0.7179       0.1377    308.0     193.0  15.9454  12.3017  20.6682    0.0000     0.0000 0.7901  0.7670  0.8117           NaN            NaN            NaN                             NaN
+    val                    two_plus_cycles     binary      0.3939       0.0221    169.0      31.0  28.7468  19.1685  43.1111    0.0000     0.0000 0.6859  0.6607  0.7076           NaN            NaN            NaN                             NaN
+    val                      fast_regrowth     binary      0.6014       0.0991    258.0     139.0  13.7092  10.5617  17.7947    0.0000     0.0000 0.7511  0.7261  0.7754           NaN            NaN            NaN                             NaN
+    val                       abrupt_start     binary      0.4452       0.0107    191.0      15.0  74.2064  43.1030 127.7545    0.0000     0.0000 0.7173  0.6913  0.7403           NaN            NaN            NaN                             NaN
+    val                  forest_since_1985     binary      0.0163       0.4472      7.0     627.0   0.0205   0.0096   0.0436    0.0000     0.0000 0.2845  0.2642  0.3031           NaN            NaN            NaN                             NaN
+    val                 hansen_loss_le2020     binary      0.5128       0.0157    220.0      22.0  66.0287  41.6085 104.7811    0.0000     0.0000 0.7486  0.7209  0.7740           NaN            NaN            NaN                             NaN
+    val                        hansen_gain     binary      0.4895       0.0029    210.0       4.0 335.1370 123.3527 910.5335    0.0000     0.0000 0.7433  0.7181  0.7678           NaN            NaN            NaN                             NaN
+    val                             n_cuts continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.8365  0.8137  0.8576        1.0000         0.0000         0.0000            higher in plantation
+    val                           n_cycles continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.8097  0.7860  0.8311        1.0000         0.0000         0.0000            higher in plantation
+    val               years_since_last_cut continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.1507  0.1285  0.1741       13.0000        40.0000         0.0000             lower in plantation
+    val                        s_max_drop3 continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.9118  0.8962  0.9263        0.3740         0.1303         0.0000            higher in plantation
+    val                              s_min continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.0680  0.0543  0.0835        0.2279         0.5716         0.0000             lower in plantation
+    val                s_frac_below_forest continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.8569  0.8356  0.8770        0.3611         0.0278         0.0000            higher in plantation
+    val                              s_std continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.9681  0.9587  0.9769        0.1642         0.0393         0.0000            higher in plantation
+    val regrow_years (points with a cycle) continuous         NaN          NaN    304.0     184.0      NaN      NaN      NaN       NaN        NaN 0.5232     NaN     NaN        1.7345         1.8173         0.3908 faster in plantation if auc>0.5
+     qc                            has_cut     binary      0.3484       0.1951    108.0      24.0   2.2054   1.3331   3.6487    0.0017     0.0067 0.5766  0.5263  0.6218           NaN            NaN            NaN                             NaN
+     qc                          has_cycle     binary      0.3419       0.1870    106.0      23.0   2.2592   1.3561   3.7637    0.0016     0.0060 0.5775  0.5271  0.6239           NaN            NaN            NaN                             NaN
+     qc                    two_plus_cycles     binary      0.1032       0.0732     32.0       9.0   1.4580   0.6744   3.1521    0.3697     0.4204 0.5150  0.4798  0.5472           NaN            NaN            NaN                             NaN
+     qc                      fast_regrowth     binary      0.2613       0.1382     81.0      17.0   2.2055   1.2456   3.9051    0.0052     0.0194 0.5615  0.5165  0.6033           NaN            NaN            NaN                             NaN
+     qc                       abrupt_start     binary      0.1387       0.0407     43.0       5.0   3.8007   1.4683   9.8385    0.0022     0.0054 0.5490  0.5251  0.5737           NaN            NaN            NaN                             NaN
+     qc                  forest_since_1985     binary      0.0613       0.3008     19.0      37.0   0.1518   0.0830   0.2774    0.0000     0.0000 0.3802  0.3355  0.4202           NaN            NaN            NaN                             NaN
+     qc                 hansen_loss_le2020     binary      0.1000       0.0163     31.0       2.0   6.7222   1.5835  28.5365    0.0021     0.0115 0.5419  0.5190  0.5615           NaN            NaN            NaN                             NaN
+     qc                        hansen_gain     binary      0.0484       0.0081     15.0       1.0   6.2034   0.8105  47.4815    0.0488     0.0885 0.5201  0.5045  0.5363           NaN            NaN            NaN                             NaN
+     qc                             n_cuts continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.5751  0.5255  0.6227        0.0000         0.0000         0.0026            higher in plantation
+     qc                           n_cycles continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.5752  0.5245  0.6220        0.0000         0.0000         0.0024            higher in plantation
+     qc               years_since_last_cut continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.4058  0.3628  0.4522       40.0000        40.0000         0.0002             lower in plantation
+     qc                        s_max_drop3 continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.7034  0.6394  0.7603        0.2100         0.1420         0.0000            higher in plantation
+     qc                              s_min continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.2817  0.2235  0.3403        0.4190         0.5355         0.0000             lower in plantation
+     qc                s_frac_below_forest continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.7162  0.6581  0.7740        0.2536         0.0571         0.0000            higher in plantation
+     qc                              s_std continuous         NaN          NaN      NaN       NaN      NaN      NaN      NaN       NaN        NaN 0.7627  0.7095  0.8173        0.0847         0.0472         0.0000            higher in plantation
+     qc regrow_years (points with a cycle) continuous         NaN          NaN    101.0      22.0      NaN      NaN      NaN       NaN        NaN 0.5257     NaN     NaN        1.4194         2.1643         0.7092 faster in plantation if auc>0.5
+
+=== 5. VAL groups (relative to MapBiomas 10 m collection 4)
+                   group    n  has_cut  has_cycle  fast_regrowth  abrupt_start  forest_since_1985  hansen_loss_le2020  hansen_gain
+             real forest 1260    0.131      0.129          0.091         0.009              0.451               0.014        0.002
+forest called plantation   72    0.236      0.236          0.194         0.014              0.403               0.028        0.028
+       caught plantation  369    0.775      0.729          0.615         0.485              0.014               0.526        0.528
+       missed plantation   40    0.675      0.675          0.550         0.150              0.025               0.375        0.150
+                   other   90    0.311      0.278          0.211         0.100              0.344               0.144        0.100
+  missed plantation vs real forest, has_cut: 0.675 vs 0.131, Fisher p=1.5e-14
+  missed plantation vs real forest, has_cycle: 0.675 vs 0.129, Fisher p=1.1e-14
+  missed plantation vs real forest, forest_since_1985: 0.025 vs 0.451, Fisher p=2.8e-09
+  missed plantation vs real forest, hansen_loss_le2020: 0.375 vs 0.014, Fisher p=8.3e-16
+  forest called plantation vs real forest, has_cut: 0.236 vs 0.131, Fisher p=0.02
+  forest called plantation vs real forest, has_cycle: 0.236 vs 0.129, Fisher p=0.019
+  forest called plantation vs real forest, forest_since_1985: 0.403 vs 0.451, Fisher p=0.47
+  forest called plantation vs real forest, hansen_loss_le2020: 0.028 vs 0.014, Fisher p=0.29
+
+=== 6. Added value on top of the team's features (VAL, spatial CV by municipality)
+rows with a missing yearly value after interpolation (filled with the column median): 0
+model rows: 1830 (plantation 428, missed plantations 39)
+AUC by feature set (mean, sd over 5 repeats x 5 spatial folds):
+                                             set model  mean   std
+                             H-all + Hansen only    LR 0.964 0.011
+                             H-all + Hansen only    RF 0.959 0.012
+             H-all + variability only (post hoc)    LR 0.973 0.006
+             H-all + variability only (post hoc)    RF 0.969 0.008
+                                      H-all only    LR 0.947 0.013
+                                      H-all only    RF 0.945 0.013
+                                         H4 only    LR 0.908 0.018
+                                         H4 only    RF 0.904 0.019
+                                     Hansen only    LR 0.933 0.023
+                                     Hansen only    RF 0.916 0.026
+                     base (no MapBiomas history)    LR 0.888 0.018
+                     base (no MapBiomas history)    RF 0.907 0.019
+                                    base + H-all    LR 0.969 0.008
+                                    base + H-all    RF 0.969 0.006
+                           base + H-all + Hansen    LR 0.978 0.009
+                           base + H-all + Hansen    RF 0.977 0.006
+           base + H-all + variability (post hoc)    LR 0.980 0.007
+           base + H-all + variability (post hoc)    RF 0.977 0.005
+base + H-all [segment cap 6, as first specified]    LR 0.969 0.007
+base + H-all [segment cap 6, as first specified]    RF 0.971 0.006
+                                       base + H4    LR 0.953 0.010
+                                       base + H4    RF 0.960 0.007
+                                   base + Hansen    LR 0.967 0.013
+                                   base + Hansen    RF 0.974 0.012
+                              base + full series    LR 0.904 0.021
+                              base + full series    RF 0.977 0.004
+                                full series only    RF 0.973 0.006
+                           team (with ever_farm)    LR 0.909 0.018
+                           team (with ever_farm)    RF 0.919 0.017
+                                    team + H-all    LR 0.969 0.008
+                                    team + H-all    RF 0.969 0.006
+                                       team + H4    LR 0.955 0.010
+                                       team + H4    RF 0.960 0.007
+Paired gains:
+model                                              new                        base  auc_new  auc_base  delta_mean  delta_sd folds_improved  delta_oof_seed42  delta_ci_lo_cluster_boot  delta_ci_hi_cluster_boot
+   LR                                        team + H4       team (with ever_farm)    0.955     0.909       0.046     0.013          25/25             0.048                     0.034                     0.060
+   RF                                        team + H4       team (with ever_farm)    0.960     0.919       0.042     0.013          25/25             0.046                     0.033                     0.058
+   LR                                     team + H-all       team (with ever_farm)    0.969     0.909       0.060     0.015          25/25             0.063                     0.048                     0.078
+   RF                                     team + H-all       team (with ever_farm)    0.969     0.919       0.051     0.016          25/25             0.055                     0.041                     0.069
+   LR                                        base + H4 base (no MapBiomas history)    0.953     0.888       0.065     0.014          25/25             0.067                     0.052                     0.082
+   RF                                        base + H4 base (no MapBiomas history)    0.960     0.907       0.053     0.015          25/25             0.055                     0.040                     0.069
+   LR                                     base + H-all base (no MapBiomas history)    0.969     0.888       0.081     0.015          25/25             0.084                     0.067                     0.101
+   RF                                     base + H-all base (no MapBiomas history)    0.969     0.907       0.062     0.018          25/25             0.065                     0.049                     0.081
+   LR                                    base + Hansen base (no MapBiomas history)    0.967     0.888       0.079     0.019          25/25             0.081                     0.065                     0.099
+   RF                                    base + Hansen base (no MapBiomas history)    0.974     0.907       0.067     0.018          25/25             0.068                     0.054                     0.083
+   LR                            base + H-all + Hansen base (no MapBiomas history)    0.978     0.888       0.090     0.017          25/25             0.093                     0.076                     0.112
+   RF                            base + H-all + Hansen base (no MapBiomas history)    0.977     0.907       0.070     0.019          25/25             0.074                     0.058                     0.089
+   LR                               base + full series base (no MapBiomas history)    0.904     0.888       0.015     0.014          23/25             0.012                    -0.005                     0.029
+   RF                               base + full series base (no MapBiomas history)    0.977     0.907       0.070     0.020          25/25             0.072                     0.056                     0.087
+   LR                              H-all + Hansen only                 Hansen only    0.964     0.933       0.030     0.018          24/25             0.035                     0.021                     0.052
+   RF                              H-all + Hansen only                 Hansen only    0.959     0.916       0.044     0.022          25/25             0.046                     0.029                     0.064
+   LR            base + H-all + variability (post hoc)                base + H-all    0.980     0.969       0.011     0.005          24/25             0.010                     0.006                     0.016
+   RF            base + H-all + variability (post hoc)                base + H-all    0.977     0.969       0.008     0.003          25/25             0.007                     0.004                     0.011
+   LR              H-all + variability only (post hoc)                  H-all only    0.973     0.947       0.026     0.011          25/25             0.025                     0.017                     0.034
+   RF              H-all + variability only (post hoc)                  H-all only    0.969     0.945       0.024     0.009          25/25             0.023                     0.016                     0.031
+   LR base + H-all [segment cap 6, as first specified] base (no MapBiomas history)    0.969     0.888       0.081     0.015          25/25             0.084                     0.067                     0.102
+   RF base + H-all [segment cap 6, as first specified] base (no MapBiomas history)    0.971     0.907       0.063     0.018          25/25             0.067                     0.051                     0.081
+Operating points (OOF, seed 42):
+                                             set model  max_fpr  threshold  recall   fpr  auc_oof    ap  missed_caught  missed_n  realforest_flagged  realforest_n  fcp_flagged  fcp_n
+                           team (with ever_farm)    LR     0.05      0.792   0.589 0.047    0.906 0.770             11        39                  43          1260           12     72
+                           team (with ever_farm)    LR     0.01      0.940   0.287 0.009    0.906 0.770              4        39                   5          1260            3     72
+                           team (with ever_farm)    RF     0.05      0.759   0.643 0.049    0.915 0.803             10        39                  40          1260           17     72
+                           team (with ever_farm)    RF     0.01      0.917   0.308 0.010    0.915 0.803              4        39                   9          1260            2     72
+                                       team + H4    LR     0.05      0.708   0.799 0.049    0.953 0.887             19        39                  52          1260            8     72
+                                       team + H4    LR     0.01      0.941   0.565 0.010    0.953 0.887              8        39                   7          1260            3     72
+                                       team + H4    RF     0.05      0.643   0.806 0.049    0.960 0.904             18        39                  51          1260           11     72
+                                       team + H4    RF     0.01      0.846   0.633 0.010    0.960 0.904              7        39                   9          1260            4     72
+                                    team + H-all    LR     0.05      0.634   0.871 0.049    0.968 0.929             24        39                  49          1260           11     72
+                                    team + H-all    LR     0.01      0.952   0.638 0.010    0.968 0.929              7        39                   8          1260            3     72
+                                    team + H-all    RF     0.05      0.576   0.879 0.049    0.970 0.928             26        39                  50          1260            9     72
+                                    team + H-all    RF     0.01      0.881   0.619 0.010    0.970 0.928              7        39                   6          1260            5     72
+                     base (no MapBiomas history)    LR     0.05      0.794   0.498 0.050    0.884 0.730             12        39                  52          1260            9     72
+                     base (no MapBiomas history)    LR     0.01      0.928   0.262 0.009    0.884 0.730              4        39                   5          1260            1     72
+                     base (no MapBiomas history)    RF     0.05      0.788   0.584 0.049    0.904 0.788             14        39                  45          1260           15     72
+                     base (no MapBiomas history)    RF     0.01      0.919   0.306 0.009    0.904 0.788              6        39                  10          1260            2     72
+                                       base + H4    LR     0.05      0.712   0.780 0.049    0.951 0.885             17        39                  52          1260            9     72
+                                       base + H4    LR     0.01      0.923   0.586 0.010    0.951 0.885              9        39                   9          1260            3     72
+                                       base + H4    RF     0.05      0.634   0.806 0.050    0.959 0.900             18        39                  50          1260           14     72
+                                       base + H4    RF     0.01      0.844   0.619 0.010    0.959 0.900              7        39                  10          1260            3     72
+                                    base + H-all    LR     0.05      0.632   0.879 0.049    0.968 0.929             26        39                  50          1260           10     72
+                                    base + H-all    LR     0.01      0.949   0.640 0.010    0.968 0.929              8        39                   9          1260            2     72
+                                    base + H-all    RF     0.05      0.559   0.883 0.049    0.969 0.927             27        39                  50          1260           10     72
+                                    base + H-all    RF     0.01      0.892   0.610 0.010    0.969 0.927              8        39                   6          1260            5     72
+                                   base + Hansen    LR     0.05      0.584   0.855 0.049    0.966 0.930             23        39                  46          1260           12     72
+                                   base + Hansen    LR     0.01      0.939   0.706 0.010    0.966 0.930             15        39                  10          1260            4     72
+                                   base + Hansen    RF     0.05      0.563   0.881 0.043    0.973 0.943             23        39                  36          1260           14     72
+                                   base + Hansen    RF     0.01      0.772   0.778 0.010    0.973 0.943             15        39                   8          1260            3     72
+                           base + H-all + Hansen    LR     0.05      0.546   0.904 0.046    0.978 0.951             25        39                  45          1260           11     72
+                           base + H-all + Hansen    LR     0.01      0.927   0.764 0.010    0.978 0.951             15        39                   7          1260            3     72
+                           base + H-all + Hansen    RF     0.05      0.519   0.914 0.048    0.978 0.948             27        39                  47          1260           11     72
+                           base + H-all + Hansen    RF     0.01      0.848   0.699 0.010    0.978 0.948             10        39                   6          1260            4     72
+                              base + full series    LR     0.05      0.775   0.664 0.049    0.897 0.800             10        39                  40          1260           18     72
+                              base + full series    LR     0.01      0.952   0.388 0.010    0.897 0.800              6        39                   7          1260            3     72
+                              base + full series    RF     0.05      0.470   0.911 0.049    0.976 0.942             18        39                  40          1260           18     72
+                              base + full series    RF     0.01      0.697   0.773 0.010    0.976 0.942              9        39                   3          1260            7     72
+                                         H4 only    LR     0.05      0.634   0.673 0.050    0.903 0.792             16        39                  56          1260            7     72
+                                         H4 only    LR     0.01      0.946   0.397 0.010    0.903 0.792              5        39                   9          1260            2     72
+                                         H4 only    RF     0.05      0.751   0.657 0.049    0.899 0.772             15        39                  54          1260            7     72
+                                         H4 only    RF     0.01      0.960   0.280 0.010    0.899 0.772              3        39                   9          1260            2     72
+                                      H-all only    LR     0.05      0.697   0.787 0.050    0.947 0.886             21        39                  56          1260            4     72
+                                      H-all only    LR     0.01      0.933   0.577 0.009    0.947 0.886             11        39                   8          1260            2     72
+                                      H-all only    RF     0.05      0.664   0.778 0.048    0.946 0.884             21        39                  51          1260            5     72
+                                      H-all only    RF     0.01      0.915   0.530 0.010    0.946 0.884             10        39                   9          1260            2     72
+                                     Hansen only    LR     0.05      0.556   0.790 0.048    0.929 0.881             21        39                  51          1260            8     72
+                                     Hansen only    LR     0.01      0.924   0.614 0.010    0.929 0.881             11        39                  11          1260            2     72
+                                     Hansen only    RF     0.05      0.670   0.790 0.050    0.915 0.856             20        39                  55          1260            7     72
+                                     Hansen only    RF     0.01      0.932   0.584 0.010    0.915 0.856             11        39                  11          1260            3     72
+                             H-all + Hansen only    LR     0.05      0.534   0.869 0.049    0.964 0.929             23        39                  52          1260            7     72
+                             H-all + Hansen only    LR     0.01      0.927   0.724 0.010    0.964 0.929             16        39                   9          1260            2     72
+                             H-all + Hansen only    RF     0.05      0.557   0.853 0.050    0.961 0.920             24        39                  54          1260            6     72
+                             H-all + Hansen only    RF     0.01      0.861   0.657 0.009    0.961 0.920             12        39                   8          1260            2     72
+                                full series only    RF     0.05      0.493   0.900 0.048    0.972 0.934             17        39                  45          1260           13     72
+                                full series only    RF     0.01      0.766   0.685 0.009    0.972 0.934              7        39                   3          1260            6     72
+base + H-all [segment cap 6, as first specified]    LR     0.05      0.642   0.874 0.049    0.969 0.929             25        39                  46          1260           12     72
+base + H-all [segment cap 6, as first specified]    LR     0.01      0.944   0.661 0.010    0.969 0.929              8        39                   9          1260            3     72
+base + H-all [segment cap 6, as first specified]    RF     0.05      0.563   0.879 0.049    0.971 0.931             26        39                  48          1260           11     72
+base + H-all [segment cap 6, as first specified]    RF     0.01      0.842   0.687 0.010    0.971 0.931             10        39                   6          1260            5     72
+           base + H-all + variability (post hoc)    LR     0.05      0.517   0.923 0.049    0.979 0.956             26        39                  45          1260           12     72
+           base + H-all + variability (post hoc)    LR     0.01      0.882   0.808 0.010    0.979 0.956             13        39                   8          1260            3     72
+           base + H-all + variability (post hoc)    RF     0.05      0.531   0.904 0.046    0.977 0.945             24        39                  44          1260           10     72
+           base + H-all + variability (post hoc)    RF     0.01      0.801   0.797 0.010    0.977 0.945             16        39                   7          1260            4     72
+             H-all + variability only (post hoc)    LR     0.05      0.566   0.890 0.050    0.971 0.941             24        39                  52          1260            9     72
+             H-all + variability only (post hoc)    LR     0.01      0.908   0.750 0.009    0.971 0.941             12        39                   7          1260            3     72
+             H-all + variability only (post hoc)    RF     0.05      0.587   0.874 0.049    0.968 0.932             21        39                  52          1260            7     72
+             H-all + variability only (post hoc)    RF     0.01      0.867   0.703 0.009    0.968 0.932             14        39                   5          1260            4     72
+MapBiomas 10 m on these rows: recall 0.862, FPR 0.051
+Logit, municipality-clustered SEs (continuous features per SD; binary per unit):
+                     coef  se_cluster  p_cluster       OR    OR_lo    OR_hi
+const             -1.9215      0.1328     0.0000   0.1464   0.1128   0.1899
+height_stdDev      0.4833      0.1193     0.0001   1.6214   1.2833   2.0486
+ndvi_aug_oct_mean  0.0486      0.1287     0.7055   1.0498   0.8158   1.3509
+sag_oct_nov_mean   1.4877      0.1487     0.0000   4.4271   3.3075   5.9256
+sag_swing_mean    -0.0258      0.1134     0.8203   0.9746   0.7803   1.2172
+n_cycles           1.0507      0.1757     0.0000   2.8596   2.0267   4.0349
+regrow_speed      -0.1099      0.1350     0.4155   0.8959   0.6877   1.1672
+forest_since_1985 -2.2752      0.4218     0.0000   0.1028   0.0450   0.2349
+abrupt_start       3.0161      0.3412     0.0000  20.4110  10.4571  39.8397
+Joint Wald test that all 4 harvest features add nothing (clustered): chi2=188.8, df=4, p=9.5e-40
+Permutation importance (drop in held-out AUC), RF base + H-all:
+             feature  perm_mean  perm_sd
+    sag_oct_nov_mean     0.0262   0.0059
+               s_min     0.0124   0.0031
+         s_max_drop3     0.0082   0.0048
+years_since_last_cut     0.0070   0.0039
+   ndvi_aug_oct_mean     0.0032   0.0014
+ s_frac_below_forest     0.0031   0.0015
+      sag_swing_mean     0.0028   0.0015
+        abrupt_start     0.0015   0.0008
+            max_drop     0.0013   0.0009
+       height_stdDev     0.0006   0.0020
+   forest_since_1985     0.0004   0.0005
+              n_cuts     0.0000   0.0005
+        regrow_speed    -0.0000   0.0008
+            n_cycles    -0.0001   0.0003
+
+=== 7. 'Forest every year since 1985' as a veto on plantation calls
+                                                            0        1        2
+tolerance_years                                         0.000    1.000    2.000
+val_forest_protected                                    0.447    0.567    0.622
+val_plant_vetoed                                        0.016    0.026    0.033
+mb_forest_calls_cancelled                              29.000   37.000   39.000
+mb_forest_calls                                        72.000   72.000   72.000
+mb_correct_calls_lost                                   5.000    9.000   10.000
+mb_correct_calls                                      369.000  369.000  369.000
+qc_forest_protected                                     0.301    0.407    0.504
+qc_plant_vetoed                                         0.061    0.126    0.142
+base (no MapBiomas history): forest flags              69.000   69.000   69.000
+base (no MapBiomas history): forest flags vetoed       22.000   29.000   34.000
+base (no MapBiomas history): plantation flags         250.000  250.000  250.000
+base (no MapBiomas history): plantation flags vetoed    3.000    5.000    8.000
+base + H-all: forest flags                             69.000   69.000   69.000
+base + H-all: forest flags vetoed                       0.000    0.000    0.000
+base + H-all: plantation flags                        378.000  378.000  378.000
+base + H-all: plantation flags vetoed                   0.000    1.000    1.000
+
+=== 8. Cropin QC polygons: train on VAL, test on QC (independent)
+                                set model  qc_auc  qc_auc_lo  qc_auc_hi  recall_at_val_thr  forest_flagged_at_val_thr  recall_at_qc_fpr5
+                            H4 only    LR   0.675      0.619      0.731              0.226                      0.098              0.174
+                            H4 only    RF   0.673      0.619      0.731              0.248                      0.122              0.168
+                         H-all only    LR   0.757      0.701      0.809              0.332                      0.073              0.271
+                         H-all only    RF   0.743      0.689      0.795              0.335                      0.065              0.287
+H-all + variability only (post hoc)    LR   0.796      0.743      0.843              0.445                      0.089              0.323
+H-all + variability only (post hoc)    RF   0.775      0.725      0.822              0.413                      0.106              0.255
+                        Hansen only    LR   0.697      0.643      0.747              0.281                      0.049              0.284
+                        Hansen only    RF   0.684      0.632      0.736              0.258                      0.057              0.245
+                H-all + Hansen only    LR   0.773      0.722      0.822              0.381                      0.065              0.323
+                H-all + Hansen only    RF   0.766      0.717      0.817              0.339                      0.057              0.335
+                   full series only    RF   0.812      0.772      0.854              0.432                      0.057              0.432
+QC: last cut year (points with a cut) plantation: {1986.0: 3, 1988.0: 6, 1989.0: 2, 1991.0: 6, 1992.0: 7, 1993.0: 1, 1994.0: 1, 1995.0: 1, 1996.0: 3, 1997.0: 5, 1998.0: 2, 1999.0: 8, 2000.0: 1, 2001.0: 1, 2002.0: 1, 2003.0: 6, 2004.0: 2, 2005.0: 7, 2006.0: 14, 2007.0: 1, 2008.0: 4, 2009.0: 1, 2010.0: 3, 2011.0: 3, 2012.0: 2, 2013.0: 6, 2014.0: 1, 2015.0: 4, 2016.0: 2, 2017.0: 1, 2018.0: 1, 2019.0: 2}
+QC: last cut year forest: {1986.0: 1, 1988.0: 8, 1989.0: 2, 1990.0: 1, 1997.0: 2, 1998.0: 2, 1999.0: 1, 2002.0: 2, 2003.0: 4, 2006.0: 1}
+QC plantations with a cut 2010-2020: 0.081; forest: 0.000
+QC rates by polygon size:
+                has_cut  has_cycle  forest_since_1985  hansen_loss_le2020
+size     label                                                           
+<300 m2  0        0.185      0.169              0.292               0.031
+         1        0.327      0.321              0.050               0.113
+300-900  0        0.237      0.237              0.316               0.000
+         1        0.341      0.329              0.082               0.071
+900-2700 0        0.167      0.167              0.278               0.000
+         1        0.364      0.364              0.055               0.091
+>2700    0        0.000      0.000              0.500               0.000
+         1        0.636      0.636              0.091               0.182
+
+=== 9. Where does it work and fail? (VAL; the reference label history is used only to stratify)
+       stratum                                             value    n  plantation  has_cut  has_cycle  forest_since_1985  abrupt_start  hansen_loss_le2020
+         state                                                PR  629         141    0.302      0.297              0.355         0.121               0.146
+         state                                                RS  578         139    0.249      0.234              0.329         0.118               0.118
+         state                                                SC  624         149    0.303      0.287              0.354         0.099               0.131
+    est_period                                         1986-2000   80          80    0.800      0.738              0.000         0.500               0.625
+    est_period                                         2001-2013  204         204    0.667      0.613              0.010         0.495               0.368
+    est_period                          2014-2020 (1st rotation)   16          16    0.438      0.375              0.062         0.375               0.062
+    est_period                                plantation in 1985  129         129    0.938      0.915              0.031         0.341               0.729
+forest_history                       forest every year 1985-2020 1261           0    0.118      0.117              0.489         0.002               0.010
+forest_history                           non-forest in some year  141           0    0.326      0.326              0.071         0.085               0.064
+    bracatinga forest within 80 km of Curitiba (bracatinga zone)  147           0    0.122      0.122              0.571         0.020               0.027
+    bracatinga                                  forest elsewhere 1255           0    0.141      0.139              0.433         0.010               0.014
+state   n  auc_n_cuts  tpr_cut  fpr_cut
+   PR 629       0.870    0.830    0.150
+   RS 578       0.813    0.698    0.107
+   SC 624       0.828    0.765    0.158
+
+=== 11. Extra diagnostics
+                                        subset             feature  n_plant  n_forest   auc
+                                    all points               s_std      429      1402 0.968
+                                    all points         s_max_drop3      429      1402 0.912
+                                    all points s_frac_below_forest      429      1402 0.857
+                                    all points              n_cuts      429      1402 0.837
+plantations with no detected cut vs all forest               s_std      101      1402 0.917
+plantations with no detected cut vs all forest         s_max_drop3      101      1402 0.718
+plantations with no detected cut vs all forest s_frac_below_forest      101      1402 0.849
+plantations with no detected cut vs all forest              n_cuts      101      1402 0.430
+  plantations vs forest with a non-forest year               s_std      429       141 0.879
+  plantations vs forest with a non-forest year         s_max_drop3      429       141 0.815
+  plantations vs forest with a non-forest year s_frac_below_forest      429       141 0.606
+  plantations vs forest with a non-forest year              n_cuts      429       141 0.755
+    plantations vs forest every year 1985-2020               s_std      429      1261 0.978
+    plantations vs forest every year 1985-2020         s_max_drop3      429      1261 0.923
+    plantations vs forest every year 1985-2020 s_frac_below_forest      429      1261 0.885
+    plantations vs forest every year 1985-2020              n_cuts      429      1261 0.846
+Within-QC spatial CV (5 repeats of 5-fold GroupKFold over 0.1-degree cells):
+                set model  qc_cv_auc_mean  qc_cv_auc_sd  n_clusters
+            H4 only    LR           0.640         0.014         227
+            H4 only    RF           0.659         0.015         227
+         H-all only    LR           0.753         0.007         227
+         H-all only    RF           0.740         0.011         227
+        Hansen only    LR           0.682         0.008         227
+        Hansen only    RF           0.655         0.016         227
+H-all + Hansen only    LR           0.768         0.006         227
+H-all + Hansen only    RF           0.748         0.013         227
+   full series only    RF           0.788         0.008         227
+                            rule dataset  plantation_flagged  forest_flagged  n_plant  n_forest
+                at least one cut     val               0.765           0.139      429      1402
+                at least one cut      qc               0.348           0.195      310       123
+             cut or abrupt start     val               0.841           0.143      429      1402
+             cut or abrupt start      qc               0.429           0.203      310       123
+       Hansen loss<=2020 or gain     val               0.718           0.018      429      1402
+       Hansen loss<=2020 or gain      qc               0.135           0.024      310       123
+     cut, abrupt start or Hansen     val               0.911           0.150      429      1402
+     cut, abrupt start or Hansen      qc               0.506           0.220      310       123
+                two or more cuts     val               0.455           0.022      429      1402
+                two or more cuts      qc               0.110           0.073      310       123
+NOT forest every year since 1985     val               0.984           0.553      429      1402
+NOT forest every year since 1985      qc               0.939           0.699      310       123
+
+=== 12. 3 x 3 neighbourhood (90 m) vs the centre pixel
+centre-pixel check vs single-pixel run: n_cuts equal 1.000, s_std corr 1.0000
+dataset                     version                                          feature   auc  forest_kept  plant_lost
+    val                centre pixel                                           n_cuts 0.837          NaN         NaN
+    val                centre pixel                                            s_std 0.968          NaN         NaN
+    val                centre pixel                                      s_max_drop3 0.912          NaN         NaN
+    val                centre pixel                              s_frac_below_forest 0.857          NaN         NaN
+    val                centre pixel forest_since_1985: forest kept / plantation lost   NaN        0.447       0.016
+    val            90 m mean series                                           n_cuts 0.821          NaN         NaN
+    val            90 m mean series                                            s_std 0.970          NaN         NaN
+    val            90 m mean series                                      s_max_drop3 0.911          NaN         NaN
+    val            90 m mean series                              s_frac_below_forest 0.836          NaN         NaN
+    val            90 m mean series forest_since_1985: forest kept / plantation lost   NaN        0.469       0.026
+    val any of 9 pixels / mean of 9                                   nb_share_cut_S 0.901          NaN         NaN
+    val any of 9 pixels / mean of 9                                    nb_mean_s_std 0.972          NaN         NaN
+    val any of 9 pixels / mean of 9                               nb_max_s_max_drop3 0.885          NaN         NaN
+    val any of 9 pixels / mean of 9                      nb_mean_s_frac_below_forest 0.826          NaN         NaN
+    val                all 9 pixels forest_since_1985: forest kept / plantation lost   NaN        0.189       0.005
+     qc                centre pixel                                           n_cuts 0.575          NaN         NaN
+     qc                centre pixel                                            s_std 0.763          NaN         NaN
+     qc                centre pixel                                      s_max_drop3 0.703          NaN         NaN
+     qc                centre pixel                              s_frac_below_forest 0.716          NaN         NaN
+     qc                centre pixel forest_since_1985: forest kept / plantation lost   NaN        0.301       0.061
+     qc            90 m mean series                                           n_cuts 0.539          NaN         NaN
+     qc            90 m mean series                                            s_std 0.734          NaN         NaN
+     qc            90 m mean series                                      s_max_drop3 0.669          NaN         NaN
+     qc            90 m mean series                              s_frac_below_forest 0.680          NaN         NaN
+     qc            90 m mean series forest_since_1985: forest kept / plantation lost   NaN        0.228       0.061
+     qc any of 9 pixels / mean of 9                                   nb_share_cut_S 0.664          NaN         NaN
+     qc any of 9 pixels / mean of 9                                    nb_mean_s_std 0.741          NaN         NaN
+     qc any of 9 pixels / mean of 9                               nb_max_s_max_drop3 0.669          NaN         NaN
+     qc any of 9 pixels / mean of 9                      nb_mean_s_frac_below_forest 0.687          NaN         NaN
+     qc                all 9 pixels forest_since_1985: forest kept / plantation lost   NaN        0.033       0.003
+                                        features model  val_cv_auc  qc_auc  qc_auc_lo  qc_auc_hi  qc_recall_at_val_thr  qc_forest_flagged_at_val_thr
+               H-all + variability, centre pixel    LR       0.971   0.796      0.743      0.843                 0.445                         0.089
+               H-all + variability, centre pixel    RF       0.968   0.775      0.725      0.822                 0.413                         0.106
+           H-all + variability, 90 m mean series    LR       0.975   0.747      0.699      0.797                 0.284                         0.065
+           H-all + variability, 90 m mean series    RF       0.971   0.720      0.669      0.773                 0.281                         0.065
+H-all + variability, centre + 9-pixel aggregates    LR       0.974   0.795      0.744      0.841                 0.377                         0.089
+H-all + variability, centre + 9-pixel aggregates    RF       0.973   0.762      0.714      0.814                 0.352                         0.081
+
+=== 10. Figures
+figures written to harvest_cycles/figures
