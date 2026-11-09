@@ -4,7 +4,7 @@
 (3 lowest-cloud in Apr-Sep, 3 in Oct-Mar; Landsat 7 SLC-off penalised).
 
 Usage: python list_scenes.py <landsat_index_south.csv from filter_index.py> <data_dir with points.csv>"""
-import sys, re, json, requests, numpy as np, pandas as pd
+import sys, re, requests, numpy as np, pandas as pd
 from concurrent.futures import ThreadPoolExecutor
 INDEX, D = sys.argv[1], sys.argv[2]
 API = "https://storage.googleapis.com/storage/v1/b/gcp-public-data-landsat/o"
@@ -22,7 +22,7 @@ def list_prefix(prefix):
         for k in range(5):
             try:
                 r = sess.get(API, params=params, timeout=60); r.raise_for_status(); break
-            except Exception as e:
+            except Exception:
                 if k == 4: raise
         d = r.json(); out += d.get('prefixes', []); tok = d.get('nextPageToken')
         if not tok: return out

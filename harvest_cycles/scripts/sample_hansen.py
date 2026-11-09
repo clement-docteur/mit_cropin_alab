@@ -4,7 +4,7 @@ Usage: python sample_hansen.py <data_dir with points.csv>"""
 import os, sys, math
 os.environ.update(GDAL_DISABLE_READDIR_ON_OPEN='EMPTY_DIR', CPL_VSIL_CURL_ALLOWED_EXTENSIONS='.tif',
                   GDAL_HTTP_MAX_RETRY='8', GDAL_HTTP_RETRY_DELAY='2')
-import numpy as np, pandas as pd, rasterio
+import pandas as pd, rasterio
 from rasterio.windows import Window
 from concurrent.futures import ThreadPoolExecutor
 D = sys.argv[1]

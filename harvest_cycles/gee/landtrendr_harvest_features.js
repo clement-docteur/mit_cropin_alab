@@ -5,14 +5,12 @@
 //   n_cuts            number of abrupt NBR drops (clear-cuts), from LandTrendr segments  -> plantation (risky)
 //   n_cycles          cuts followed by regrowth of >= REC_FRAC of the drop within MAX_REC_YEARS, measured
 //                     over the next one or two LandTrendr segments                       -> plantation (risky)
-//   regrow_years      fastest time to regrow REGROW_FRAC of a drop (99 = never). Not discriminative in
-//                     the offline analysis; kept for inspection only.
 //   last_cut_year     year of the most recent cut (0 = none)
 //   max_drop          largest cut, in NBR units
 //   forest_since_1985 no cut AND at most STABLE_TOLERANCE yearly values below FOREST_LEVEL    -> natural (veto)
 //   abrupt_start      a year at forest level with >= MIN_OPEN_YEARS open years (<= OPEN_LEVEL) in the 8 years
 //                     before it and the last open year at most FAST_RISE_YEARS earlier       -> plantation
-//   years_below_forest, n_vertices, first_year, lt_rmse
+//   years_below_forest, n_vertices (diagnostics)
 // plus the yearly NBR values (nbr_1985 ... nbr_CUTOFF) and Hansen GFC, so the features can be recomputed
 // offline with harvest_cycles/scripts/features_from_gee_export.py (exactly the code of the analysis).
 //
@@ -49,7 +47,6 @@ var DROP             = 0.20;  // minimum NBR fall of a cut
 var MAX_CUT_YEARS    = 3;     // a cut must happen within this many years (abrupt)
 var REC_FRAC         = 0.5;   // regrowth must recover this share of the drop to count as a cycle
 var MAX_REC_YEARS    = 10;    // ... within this many years
-var REGROW_FRAC      = 0.8;   // regrow_years = years to recover this share of the drop
 var FOREST_LEVEL     = 0.70;  // PLACEHOLDER - replace with CALIBRATE closed_p5
 var OPEN_LEVEL       = 0.55;  // PLACEHOLDER - replace with min(open_p25, closed_p5 - DROP / 2)
 var STABLE_TOLERANCE = 0;     // yearly values allowed below FOREST_LEVEL for forest_since_1985
@@ -80,8 +77,8 @@ var states = ee.FeatureCollection('FAO/GAUL/2015/level1')
 var REGION = ee.Geometry.Rectangle([-58.0, -34.0, -48.0, -22.4]);   // for filterBounds only
 
 // Output column names (client-side, for the CSV selectors)
-var FEATURE_NAMES = ['n_cuts', 'n_cycles', 'regrow_years', 'last_cut_year', 'max_drop', 'forest_since_1985',
-                     'abrupt_start', 'years_below_forest', 'n_vertices', 'first_year', 'lt_rmse'];
+var FEATURE_NAMES = ['n_cuts', 'n_cycles', 'last_cut_year', 'max_drop', 'forest_since_1985', 'abrupt_start',
+                     'years_below_forest', 'n_vertices'];
 var YEARS_JS = [], YEAR_NAMES = [];
 for (var yy = START_YEAR; yy <= CUTOFF; yy++) { YEARS_JS.push(yy); YEAR_NAMES.push('nbr_' + yy); }
 var NY = YEARS_JS.length;
@@ -150,9 +147,6 @@ function arrSum(a) { return a.arrayReduce(ee.Reducer.sum(), [1]).arrayGet([0, 0]
 function arrMaxPad(a, keep, pad) {   // max of a where keep, or pad if none
   return a.toFloat().arrayMask(keep).arrayCat(one(pad), 1).arrayReduce(ee.Reducer.max(), [1]).arrayGet([0, 0]);
 }
-function arrMinPad(a, keep, pad) {   // min of a where keep, or pad if none
-  return a.toFloat().arrayMask(keep).arrayCat(one(pad), 1).arrayReduce(ee.Reducer.min(), [1]).arrayGet([0, 0]);
-}
 
 // ---- Segments from the LandTrendr vertices ------------------------------------
 var ltA = lt.select('LandTrendr');                  // 4 x nYears: year, source, fitted, isVertex
@@ -181,7 +175,7 @@ function timeTo(frac) {
   var t2 = d1.add(d2.multiply(tgt.subtract(r1).divide(r2.max(1e-6))));
   return t1.multiply(in1).add(t2.multiply(in2)).add(in1.not().and(in2.not()).multiply(999));
 }
-var t50 = timeTo(REC_FRAC), t80 = timeTo(REGROW_FRAC);
+var t50 = timeTo(REC_FRAC);
 var isCycle = isCut.and(t50.lte(MAX_REC_YEARS));
 var nCuts = arrSum(isCut).rename('n_cuts');
 
@@ -201,15 +195,12 @@ var isStart = high.and(lowWin.gte(MIN_OPEN_YEARS)).and(yrsRow.subtract(lastLow).
 var feats = ee.Image.cat(
   nCuts,
   arrSum(isCycle).rename('n_cycles'),
-  arrMinPad(t80, isCycle.and(t80.lt(999)), 99).rename('regrow_years'),   // 99 = no complete regrowth
   arrMaxPad(y0.add(1), isCut, 0).rename('last_cut_year'),                // 0 = no cut
   arrMaxPad(drop, isCut, 0).rename('max_drop'),
   nCuts.eq(0).and(yearsBelow.lte(STABLE_TOLERANCE)).rename('forest_since_1985'),
   isStart.arrayReduce(ee.Reducer.max(), [1]).arrayGet([0, 0]).rename('abrupt_start'),
   yearsBelow.rename('years_below_forest'),
-  vy.arrayLength(1).subtract(1).rename('n_vertices'),
-  vy.arrayGet([0, 0]).rename('first_year'),
-  lt.select('rmse').multiply(0.001).rename('lt_rmse')
+  vy.arrayLength(1).subtract(1).rename('n_vertices')
 ).toFloat();
 
 var ly = hansen.select('lossyear');

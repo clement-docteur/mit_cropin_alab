@@ -66,8 +66,8 @@ for k in range(len(d)):
     r.update(hl.summary_features(row, p))
     rows.append(r)
 F = pd.DataFrame(rows)
-GEE_FEATURES = ["n_cuts", "n_cycles", "regrow_years", "last_cut_year", "max_drop", "forest_since_1985",
-                "abrupt_start", "n_vertices", "first_year", "lt_rmse"]
+GEE_FEATURES = ["n_cuts", "n_cycles", "last_cut_year", "max_drop", "forest_since_1985", "abrupt_start",
+                "years_below_forest", "n_vertices"]
 keep = [c for c in d.columns if c not in ycols]
 out = pd.concat([d[keep].rename(columns={c: f"gee_{c}" for c in GEE_FEATURES}), F], axis=1)
 out.to_csv(args.out, index=False)
