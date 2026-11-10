@@ -7,6 +7,7 @@ Rio Grande do Sul, using only imagery up to the EUDR cutoff (end of 2020)? Findi
 | Path | What it is |
 |---|---|
 | `docs/summary.md` | Findings, significance, recommendations, caveats |
+| `harvest_cycles_findings.ipynb` | All findings in one notebook, recomputed step by step from the yearly NBR series (needs the git-ignored data folder; about 8 minutes) |
 | `scripts/` | The pipeline (below) |
 | `gee/landtrendr_harvest_features.js` | Earth Engine version for production and the 10 m map: real LandTrendr on Landsat Collection 2 surface reflectance; exports the features and the yearly NBR |
 | `results/` | Tables and the run log from `analysis.py` (point level only for the public MapBiomas points; Cropin QC only as aggregates) |
