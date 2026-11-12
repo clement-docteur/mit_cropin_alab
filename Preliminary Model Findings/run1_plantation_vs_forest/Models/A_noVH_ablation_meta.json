@@ -1,0 +1,31 @@
+{
+  "run": "A_noVH_ablation",
+  "n_rows": 520,
+  "n_plantation": 94,
+  "features_primary": [
+    "height_stdDev",
+    "ndvi_aug_oct_mean",
+    "sag_oct_nov_mean",
+    "sag_swing_mean",
+    "ever_farm"
+  ],
+  "features_all_candidates": null,
+  "label": "plantation (1) vs natural forest (0)",
+  "seed": 42,
+  "sklearn_version": "1.9.1",
+  "note": "Fit on all rows; performance must be judged from the spatial-CV out-of-fold results, not from these fitted models. Thresholds were chosen on the same OOF scores (optimistic).",
+  "thresholds_from_oof": {
+    "LR": {
+      "t=0.5": 0.5,
+      "Youden": 0.6093115207640678,
+      "FPR<=5%": 0.7287388549446876,
+      "FPR<=1%": 0.9441217262206871
+    },
+    "RF": {
+      "t=0.5": 0.5,
+      "Youden": 0.5656896209710832,
+      "FPR<=5%": 0.6699193974569597,
+      "FPR<=1%": 0.9388235891031104
+    }
+  }
+}

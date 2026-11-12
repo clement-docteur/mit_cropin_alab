@@ -1,0 +1,9 @@
+comparison,first,second,fp_diff,fp_diff_ci_low,fp_diff_ci_high,recall_diff,recall_diff_ci_low,recall_diff_ci_high,expost_matched_fp_diff,expost_diff_ci_low,expost_diff_ci_high
+embeddings only vs handcrafted (RF),RF|B,RF|A,-36,-54.0,-18.975000000000136,0.002139800285306692,-0.017304328275544324,0.020950689908201318,-37,-63.0,-16.0
+A+embeddings vs embeddings (RF),RF|C,RF|B,-12,-20.0,-4.0,0.003566333808844524,-0.0073987975269022175,0.013698630136986249,-11,-22.0,-2.0
+A+embeddings vs handcrafted (RF),RF|C,RF|A,-48,-65.0,-32.0,0.005706134094151216,-0.011863638513759,0.022048756473274183,-48,-75.0,-29.0
+adding VH to A0 (RF); vv_mean was dropped by the VIF rule,RF|A,RF|A0,-1,-10.0,8.0,0.0028530670470756636,-0.006565514672711608,0.012373991291912462,-8,-21.0,9.0
+"adding VH to A0 (RF), same features as A with columns reordered",RF|A_vh,RF|A0,-4,-14.0,5.0,0.0028530670470756636,-0.00580294801988854,0.011594834391083327,-8,-20.0,7.0
+"RF NOISE CHECK: identical features, only column order differs",RF|A_vh,RF|A,-3,-7.0,0.0,0.0,-0.004985843826720576,0.004637330353114399,0,-7.0,5.0
+adding VH to A0 (plain LR),LR-plain|A,LR-plain|A0,-13,-26.0,-1.0,0.003566333808844524,-0.006628994640051222,0.01351351351351349,-15,-38.0,1.0
+A+embeddings vs embeddings (L2 LR),LR-L2|C,LR-L2|B,-3,-9.0,3.0,-0.006419400855920188,-0.018764337410077166,0.006225917494461176,-3,-12.0,5.0

@@ -1,0 +1,353 @@
+[Task 1] rows: 1831
+By plantation label:
+ plantation
+forest(0)        1402
+plantation(1)     429
+Name: count, dtype: int64
+By group:
+ group
+real forest                 1260
+caught plantation            369
+other                         90
+forest called plantation      72
+missed plantation             40
+Name: count, dtype: int64
+Group x label:
+ plantation                   0    1
+group                              
+caught plantation            0  369
+forest called plantation    72    0
+missed plantation            0   40
+other                       70   20
+real forest               1260    0
+Missing values per column (only columns with any):
+ ndmi_aug_oct_mean         1
+ndmi_aug_oct_stdDev       1
+ndvi_aug_oct_mean         1
+ndvi_aug_oct_stdDev       1
+vh_mean                1311
+vh_stdDev              1311
+vhvv_mean              1311
+vhvv_stdDev            1311
+vv_mean                1311
+vv_stdDev              1311
+dtype: int64
+
+VH missing by state:
+ vh_missing  False  True   All
+state                        
+PR            266   363   629
+RS            229   349   578
+SC             25   599   624
+All           520  1311  1831
+VH missing by group:
+ vh_missing                False  True   All
+group                                      
+caught plantation            79   290   369
+forest called plantation      9    63    72
+missed plantation            10    30    40
+other                        52    38    90
+real forest                 370   890  1260
+All                         520  1311  1831
+
+Dropping rows missing PRIMARY features: 1311 dropped, 520 kept
+Run A rows (also need all candidates): 520 kept (missed plantations kept: 10 of 40)
+Run B rows (no S1 features needed): 1830 kept (missed plantations kept: 39)
+
+====================================================================================================
+RUN A_withVH_spec: n=520, primary=['height_stdDev', 'vh_mean', 'ndvi_aug_oct_mean', 'sag_oct_nov_mean', 'sag_swing_mean', 'ever_farm']
+====================================================================================================
+n=520  plantation=94  forest=426  municipalities=149
+groups: {'real forest': np.int64(370), 'caught plantation': np.int64(79), 'other': np.int64(52), 'missed plantation': np.int64(10), 'forest called plantation': np.int64(9)}
+
+[Task 2] Correlation matrix (primary):
+                    height_stdDev  vh_mean  ndvi_aug_oct_mean  sag_oct_nov_mean  sag_swing_mean  ever_farm
+height_stdDev               1.00    -0.19              -0.12              0.22            0.02       0.24
+vh_mean                    -0.19     1.00               0.16             -0.21            0.06      -0.02
+ndvi_aug_oct_mean          -0.12     0.16               1.00             -0.30           -0.08      -0.12
+sag_oct_nov_mean            0.22    -0.21              -0.30              1.00           -0.44       0.16
+sag_swing_mean              0.02     0.06              -0.08             -0.44            1.00      -0.04
+ever_farm                   0.24    -0.02              -0.12              0.16           -0.04       1.00
+Pairs with |r|>0.8: none
+VIF:
+ height_stdDev        1.15
+vh_mean              1.08
+ndvi_aug_oct_mean    1.19
+sag_oct_nov_mean     1.55
+sag_swing_mean       1.33
+ever_farm            1.08
+Name: VIF, dtype: float64
+
+Group medians of primary features:
+                           height_stdDev  vh_mean  ndvi_aug_oct_mean  sag_oct_nov_mean  sag_swing_mean  ever_farm
+group                                                                                                           
+caught plantation                 0.746  -16.987              0.828           162.401          12.978        0.0
+forest called plantation          1.049  -16.087              0.816           151.699          18.250        0.0
+missed plantation                 0.728  -15.919              0.798           153.891          16.659        0.0
+other                             0.487  -14.414              0.806           152.760          17.925        0.0
+real forest                       0.487  -14.858              0.819           151.323          17.324        0.0
+
+[Task 4] Per-fold sizes and AUC:
+    fold  n_test  n_plantation  n_missed_plant  AUC_LR  AUC_RF
+0     0     107            16               0   0.959   0.934
+1     1      87            17               0   0.934   0.971
+2     2     118            31               9   0.836   0.859
+3     3     131            16               1   0.938   0.908
+4     4      77            14               0   0.981   0.960
+  [check] max |coef diff| IRLS vs sklearn(C=1e10): 2.94e-03
+
+[Task 8] Logit on all data, standardised features (IRLS fallback (statsmodels not installed; same MLE and Wald inference)); n=520
+NOTE: p-values likely optimistic (spatial autocorrelation; unweighted fit).
+                   coef_per_SD      se  odds_ratio_per_SD  OR_ci_low  OR_ci_high  p_value
+const                  -2.6882  0.2385             0.0680     0.0426      0.1085   0.0000
+height_stdDev           0.4260  0.1655             1.5311     1.1069      2.1177   0.0101
+vh_mean                -1.0891  0.2200             0.3365     0.2187      0.5179   0.0000
+ndvi_aug_oct_mean       0.1883  0.1717             1.2073     0.8623      1.6901   0.2725
+sag_oct_nov_mean        1.8742  0.2702             6.5154     3.8363     11.0655   0.0000
+sag_swing_mean         -0.1826  0.2046             0.8331     0.5578      1.2441   0.3721
+ever_farm               0.4399  0.1523             1.5525     1.1518      2.0926   0.0039
+
+Permutation importance (drop in AUC on held-out folds) + impurity (reference):
+                   perm_mean  perm_sd  rf_impurity  rank_LR(|z|)  rank_RF(perm)
+sag_oct_nov_mean      0.1721   0.0490       0.4683             1              1
+vh_mean               0.0406   0.0225       0.1842             2              2
+height_stdDev         0.0089   0.0098       0.0850             4              3
+ndvi_aug_oct_mean     0.0033   0.0043       0.0851             5              4
+ever_farm            -0.0002   0.0035       0.0219             3              5
+sag_swing_mean       -0.0024   0.0067       0.1555             6              6
+
+[Task 9] Secondary run, 14 features: ['height_mean', 'height_stdDev', 'vh_mean', 'vv_mean', 'vhvv_mean', 'ndvi_aug_oct_mean', 'ndvi_year_mean', 'ndvi_p10_jul_nov_mean', 'ndmi_aug_oct_mean', 'sag_oct_nov_mean', 'sag_year_mean', 'sag_swing_mean', 'ever_farm', 'farm_years_mean']
+  model    AUC_primary        AUC_all  delta_mean  delta_sd folds_improved
+0    LR  0.929 ± 0.055  0.958 ± 0.038       0.029     0.023            5/5
+1    RF  0.926 ± 0.045  0.963 ± 0.032       0.037     0.015            5/5
+
+[Tasks 5-6] Metrics (OOF). Threshold chosen on the same OOF scores -> optimistic.
+feature_set     model   op_point  threshold  auc_fold_mean  auc_fold_sd  accuracy  precision  recall   fpr   fnr  tp  fp  fn  tn
+    primary        LR      t=0.5      0.500          0.929        0.055     0.858      0.575   0.819 0.134 0.181  77  57  17 369
+    primary        LR     Youden      0.561          0.929        0.055     0.883      0.636   0.819 0.103 0.181  77  44  17 382
+    primary        LR    FPR<=5%      0.730          0.929        0.055     0.906      0.759   0.702 0.049 0.298  66  21  28 405
+    primary        LR    FPR<=1%      0.937          0.929        0.055     0.892      0.913   0.447 0.009 0.553  42   4  52 422
+    primary        RF      t=0.5      0.500          0.926        0.045     0.885      0.652   0.777 0.092 0.223  73  39  21 387
+    primary        RF     Youden      0.448          0.926        0.045     0.883      0.632   0.840 0.108 0.160  79  46  15 380
+    primary        RF    FPR<=5%      0.689          0.926        0.045     0.913      0.788   0.713 0.042 0.287  67  18  27 408
+    primary        RF    FPR<=1%      0.877          0.926        0.045     0.894      0.915   0.457 0.009 0.543  43   4  51 422
+   baseline MapBiomas binary map        NaN            NaN          NaN     0.954      0.898   0.840 0.021 0.160  79   9  15 417
+
+[Task 7] 'missed plantation' caught vs forest wrongly flagged:
+feature_set     model   op_point  missed_n  missed_flagged  missed_share  missed_lo  missed_hi  realforest_n  realforest_flagged  realforest_share  fcp_n  fcp_flagged  fcp_share
+    primary        LR      t=0.5        10               5           0.5      0.237      0.763           370                  47             0.127      9            3      0.333
+    primary        LR     Youden        10               5           0.5      0.237      0.763           370                  37             0.100      9            1      0.111
+    primary        LR    FPR<=5%        10               3           0.3      0.108      0.603           370                  16             0.043      9            1      0.111
+    primary        LR    FPR<=1%        10               2           0.2      0.057      0.510           370                   2             0.005      9            1      0.111
+    primary        RF      t=0.5        10               4           0.4      0.168      0.687           370                  28             0.076      9            2      0.222
+    primary        RF     Youden        10               5           0.5      0.237      0.763           370                  34             0.092      9            2      0.222
+    primary        RF    FPR<=5%        10               3           0.3      0.108      0.603           370                  12             0.032      9            2      0.222
+    primary        RF    FPR<=1%        10               2           0.2      0.057      0.510           370                   1             0.003      9            1      0.111
+   baseline MapBiomas binary map        10               0           0.0      0.000      0.278           370                   0             0.000      9            9      1.000
+
+====================================================================================================
+RUN A_noVH_ablation: n=520, primary=['height_stdDev', 'ndvi_aug_oct_mean', 'sag_oct_nov_mean', 'sag_swing_mean', 'ever_farm']
+====================================================================================================
+n=520  plantation=94  forest=426  municipalities=149
+groups: {'real forest': np.int64(370), 'caught plantation': np.int64(79), 'other': np.int64(52), 'missed plantation': np.int64(10), 'forest called plantation': np.int64(9)}
+
+[Task 2] Correlation matrix (primary):
+                    height_stdDev  ndvi_aug_oct_mean  sag_oct_nov_mean  sag_swing_mean  ever_farm
+height_stdDev               1.00              -0.12              0.22            0.02       0.24
+ndvi_aug_oct_mean          -0.12               1.00             -0.30           -0.08      -0.12
+sag_oct_nov_mean            0.22              -0.30              1.00           -0.44       0.16
+sag_swing_mean              0.02              -0.08             -0.44            1.00      -0.04
+ever_farm                   0.24              -0.12              0.16           -0.04       1.00
+Pairs with |r|>0.8: none
+VIF:
+ height_stdDev        1.12
+ndvi_aug_oct_mean    1.18
+sag_oct_nov_mean     1.52
+sag_swing_mean       1.33
+ever_farm            1.08
+Name: VIF, dtype: float64
+
+Group medians of primary features:
+                           height_stdDev  ndvi_aug_oct_mean  sag_oct_nov_mean  sag_swing_mean  ever_farm
+group                                                                                                  
+caught plantation                 0.746              0.828           162.401          12.978        0.0
+forest called plantation          1.049              0.816           151.699          18.250        0.0
+missed plantation                 0.728              0.798           153.891          16.659        0.0
+other                             0.487              0.806           152.760          17.925        0.0
+real forest                       0.487              0.819           151.323          17.324        0.0
+
+[Task 4] Per-fold sizes and AUC:
+    fold  n_test  n_plantation  n_missed_plant  AUC_LR  AUC_RF
+0     0     107            16               0   0.942   0.885
+1     1      87            17               0   0.912   0.907
+2     2     118            31               9   0.803   0.809
+3     3     131            16               1   0.919   0.910
+4     4      77            14               0   0.974   0.947
+  [check] max |coef diff| IRLS vs sklearn(C=1e10): 6.17e-04
+
+[Task 8] Logit on all data, standardised features (IRLS fallback (statsmodels not installed; same MLE and Wald inference)); n=520
+NOTE: p-values likely optimistic (spatial autocorrelation; unweighted fit).
+                   coef_per_SD      se  odds_ratio_per_SD  OR_ci_low  OR_ci_high  p_value
+const                  -2.4171  0.2041             0.0892     0.0598      0.1331   0.0000
+height_stdDev           0.5271  0.1554             1.6941     1.2492      2.2974   0.0007
+ndvi_aug_oct_mean       0.0753  0.1474             1.0782     0.8076      1.4394   0.6096
+sag_oct_nov_mean        1.9490  0.2516             7.0219     4.2885     11.4977   0.0000
+sag_swing_mean         -0.1510  0.1916             0.8598     0.5906      1.2518   0.4307
+ever_farm               0.3546  0.1420             1.4256     1.0792      1.8833   0.0125
+
+Permutation importance (drop in AUC on held-out folds) + impurity (reference):
+                   perm_mean  perm_sd  rf_impurity  rank_LR(|z|)  rank_RF(perm)
+sag_oct_nov_mean      0.2003   0.0434       0.5777             1              1
+height_stdDev         0.0137   0.0225       0.1184             2              2
+ndvi_aug_oct_mean     0.0047   0.0059       0.1049             5              3
+sag_swing_mean        0.0008   0.0051       0.1765             4              4
+ever_farm             0.0005   0.0045       0.0225             3              5
+
+[Tasks 5-6] Metrics (OOF). Threshold chosen on the same OOF scores -> optimistic.
+feature_set     model   op_point  threshold  auc_fold_mean  auc_fold_sd  accuracy  precision  recall   fpr   fnr  tp  fp  fn  tn
+    primary        LR      t=0.5      0.500          0.910        0.064     0.873      0.611   0.819 0.115 0.181  77  49  17 377
+    primary        LR     Youden      0.609          0.910        0.064     0.900      0.698   0.787 0.075 0.213  74  32  20 394
+    primary        LR    FPR<=5%      0.729          0.910        0.064     0.904      0.756   0.691 0.049 0.309  65  21  29 405
+    primary        LR    FPR<=1%      0.944          0.910        0.064     0.869      0.882   0.319 0.009 0.681  30   4  64 422
+    primary        RF      t=0.5      0.500          0.892        0.051     0.892      0.673   0.787 0.085 0.213  74  36  20 390
+    primary        RF     Youden      0.566          0.892        0.051     0.906      0.718   0.787 0.068 0.213  74  29  20 397
+    primary        RF    FPR<=5%      0.670          0.892        0.051     0.919      0.789   0.755 0.045 0.245  71  19  23 407
+    primary        RF    FPR<=1%      0.939          0.892        0.051     0.863      0.871   0.287 0.009 0.713  27   4  67 422
+   baseline MapBiomas binary map        NaN            NaN          NaN     0.954      0.898   0.840 0.021 0.160  79   9  15 417
+
+[Task 7] 'missed plantation' caught vs forest wrongly flagged:
+feature_set     model   op_point  missed_n  missed_flagged  missed_share  missed_lo  missed_hi  realforest_n  realforest_flagged  realforest_share  fcp_n  fcp_flagged  fcp_share
+    primary        LR      t=0.5        10               4           0.4      0.168      0.687           370                  36             0.097      9            3      0.333
+    primary        LR     Youden        10               4           0.4      0.168      0.687           370                  21             0.057      9            3      0.333
+    primary        LR    FPR<=5%        10               3           0.3      0.108      0.603           370                  11             0.030      9            2      0.222
+    primary        LR    FPR<=1%        10               1           0.1      0.018      0.404           370                   2             0.005      9            1      0.111
+    primary        RF      t=0.5        10               4           0.4      0.168      0.687           370                  22             0.059      9            3      0.333
+    primary        RF     Youden        10               4           0.4      0.168      0.687           370                  18             0.049      9            2      0.222
+    primary        RF    FPR<=5%        10               3           0.3      0.108      0.603           370                  11             0.030      9            2      0.222
+    primary        RF    FPR<=1%        10               2           0.2      0.057      0.510           370                   1             0.003      9            1      0.111
+   baseline MapBiomas binary map        10               0           0.0      0.000      0.278           370                   0             0.000      9            9      1.000
+
+====================================================================================================
+RUN B_noVH_allrows: n=1830, primary=['height_stdDev', 'ndvi_aug_oct_mean', 'sag_oct_nov_mean', 'sag_swing_mean', 'ever_farm']
+====================================================================================================
+n=1830  plantation=428  forest=1402  municipalities=608
+groups: {'real forest': np.int64(1260), 'caught plantation': np.int64(369), 'other': np.int64(90), 'forest called plantation': np.int64(72), 'missed plantation': np.int64(39)}
+
+[Task 2] Correlation matrix (primary):
+                    height_stdDev  ndvi_aug_oct_mean  sag_oct_nov_mean  sag_swing_mean  ever_farm
+height_stdDev               1.00              -0.18              0.10            0.08       0.15
+ndvi_aug_oct_mean          -0.18               1.00             -0.23           -0.27      -0.12
+sag_oct_nov_mean            0.10              -0.23              1.00           -0.47       0.15
+sag_swing_mean              0.08              -0.27             -0.47            1.00      -0.09
+ever_farm                   0.15              -0.12              0.15           -0.09       1.00
+Pairs with |r|>0.8: none
+VIF:
+ height_stdDev        1.07
+ndvi_aug_oct_mean    1.34
+sag_oct_nov_mean     1.59
+sag_swing_mean       1.62
+ever_farm            1.05
+Name: VIF, dtype: float64
+
+Group medians of primary features:
+                           height_stdDev  ndvi_aug_oct_mean  sag_oct_nov_mean  sag_swing_mean  ever_farm
+group                                                                                                  
+caught plantation                 0.742              0.825           161.939          13.163        1.0
+forest called plantation          0.615              0.828           155.007          16.998        0.0
+missed plantation                 0.860              0.803           157.013          15.896        0.0
+other                             0.565              0.772           153.647          18.439        0.0
+real forest                       0.499              0.817           151.729          17.638        0.0
+
+[Task 4] Per-fold sizes and AUC:
+    fold  n_test  n_plantation  n_missed_plant  AUC_LR  AUC_RF
+0     0     384            92               6   0.918   0.918
+1     1     338            77               8   0.919   0.917
+2     2     354            85               5   0.927   0.936
+3     3     352            88              10   0.874   0.895
+4     4     402            86              10   0.897   0.916
+  [check] max |coef diff| IRLS vs sklearn(C=1e10): 4.64e-04
+
+[Task 8] Logit on all data, standardised features (IRLS fallback (statsmodels not installed; same MLE and Wald inference)); n=1830
+NOTE: p-values likely optimistic (spatial autocorrelation; unweighted fit).
+                   coef_per_SD      se  odds_ratio_per_SD  OR_ci_low  OR_ci_high  p_value
+const                  -1.9909  0.0967             0.1366     0.1130      0.1651   0.0000
+height_stdDev           0.6008  0.0811             1.8236     1.5557      2.1375   0.0000
+ndvi_aug_oct_mean      -0.0665  0.0900             0.9356     0.7843      1.1161   0.4598
+sag_oct_nov_mean        1.7356  0.1199             5.6723     4.4841      7.1755   0.0000
+sag_swing_mean         -0.3166  0.1020             0.7286     0.5966      0.8898   0.0019
+ever_farm               0.7180  0.0698             2.0503     1.7883      2.3506   0.0000
+
+Permutation importance (drop in AUC on held-out folds) + impurity (reference):
+                   perm_mean  perm_sd  rf_impurity  rank_LR(|z|)  rank_RF(perm)
+sag_oct_nov_mean      0.2017   0.0151       0.4927             1              1
+ever_farm             0.0255   0.0064       0.0973             2              2
+ndvi_aug_oct_mean     0.0229   0.0074       0.1241             5              3
+height_stdDev         0.0208   0.0152       0.1119             3              4
+sag_swing_mean        0.0099   0.0033       0.1740             4              5
+
+[Task 9] Secondary run, 11 features: ['height_mean', 'height_stdDev', 'ndvi_aug_oct_mean', 'ndvi_year_mean', 'ndvi_p10_jul_nov_mean', 'ndmi_aug_oct_mean', 'sag_oct_nov_mean', 'sag_year_mean', 'sag_swing_mean', 'ever_farm', 'farm_years_mean']
+  model    AUC_primary        AUC_all  delta_mean  delta_sd folds_improved
+0    LR  0.907 ± 0.021  0.936 ± 0.029       0.029     0.009            5/5
+1    RF  0.916 ± 0.014  0.945 ± 0.017       0.029     0.010            5/5
+
+[Tasks 5-6] Metrics (OOF). Threshold chosen on the same OOF scores -> optimistic.
+feature_set     model   op_point  threshold  auc_fold_mean  auc_fold_sd  accuracy  precision  recall   fpr   fnr  tp  fp  fn   tn
+    primary        LR      t=0.5      0.500          0.907        0.021     0.843      0.622   0.836 0.155 0.164 358 218  70 1184
+    primary        LR     Youden      0.470          0.907        0.021     0.836      0.604   0.860 0.172 0.140 368 241  60 1161
+    primary        LR    FPR<=5%      0.792          0.907        0.021     0.868      0.792   0.589 0.047 0.411 252  66 176 1336
+    primary        LR    FPR<=1%      0.940          0.907        0.021     0.826      0.904   0.287 0.009 0.713 123  13 305 1389
+    primary        RF      t=0.5      0.500          0.916        0.014     0.864      0.667   0.834 0.127 0.166 357 178  71 1224
+    primary        RF     Youden      0.526          0.916        0.014     0.874      0.693   0.832 0.113 0.168 356 158  72 1244
+    primary        RF    FPR<=5%      0.759          0.916        0.014     0.879      0.802   0.643 0.049 0.357 275  68 153 1334
+    primary        RF    FPR<=1%      0.917          0.916        0.014     0.831      0.904   0.308 0.010 0.692 132  14 296 1388
+   baseline MapBiomas binary map        NaN            NaN          NaN     0.928      0.837   0.862 0.051 0.138 369  72  59 1330
+
+[Task 7] 'missed plantation' caught vs forest wrongly flagged:
+feature_set     model   op_point  missed_n  missed_flagged  missed_share  missed_lo  missed_hi  realforest_n  realforest_flagged  realforest_share  fcp_n  fcp_flagged  fcp_share
+    primary        LR      t=0.5        39              21         0.538      0.386      0.684          1260                 176             0.140     72           25      0.347
+    primary        LR     Youden        39              25         0.641      0.484      0.773          1260                 197             0.156     72           25      0.347
+    primary        LR    FPR<=5%        39              11         0.282      0.165      0.438          1260                  43             0.034     72           12      0.167
+    primary        LR    FPR<=1%        39               4         0.103      0.041      0.236          1260                   5             0.004     72            3      0.042
+    primary        RF      t=0.5        39              18         0.462      0.316      0.614          1260                 133             0.106     72           28      0.389
+    primary        RF     Youden        39              18         0.462      0.316      0.614          1260                 116             0.092     72           26      0.361
+    primary        RF    FPR<=5%        39              10         0.256      0.146      0.411          1260                  40             0.032     72           17      0.236
+    primary        RF    FPR<=1%        39               4         0.103      0.041      0.236          1260                   9             0.007     72            2      0.028
+   baseline MapBiomas binary map        39               0         0.000      0.000      0.090          1260                   0             0.000     72           72      1.000
+
+====================================================================================================
+Effect of adding VH, same rows, same folds (run A vs A_noVH)
+  LR: AUC with VH 0.929 vs without 0.910; paired delta +0.020 ± 0.010; improved in 5/5 folds
+  RF: AUC with VH 0.926 vs without 0.892; paired delta +0.035 ± 0.028; improved in 4/5 folds
+
+====================================================================================================
+Extra diagnostics
+
+A_noVH_ablation: missed plantations n=10 in 6 municipalities; by state {'RS': 7, 'PR': 3}; by CV fold {2: 9, 3: 1}
+
+A_withVH_spec: missed plantations n=10 in 6 municipalities; by state {'RS': 7, 'PR': 3}; by CV fold {2: 9, 3: 1}
+
+B_noVH_allrows: missed plantations n=39 in 34 municipalities; by state {'RS': 17, 'SC': 12, 'PR': 10}; by CV fold {0: 6, 1: 8, 2: 5, 3: 10, 4: 10}
+
+AUC on the hard subset only (missed plantation vs real forest), 95% CI = bootstrap over municipalities:
+            run model  n_missed  n_real_forest  auc_missed_vs_realforest  ci_low  ci_high
+A_noVH_ablation    LR        10            370                     0.570   0.418    0.925
+A_noVH_ablation    RF        10            370                     0.598   0.369    0.957
+  A_withVH_spec    LR        10            370                     0.629   0.502    0.922
+  A_withVH_spec    RF        10            370                     0.659   0.487    0.929
+ B_noVH_allrows    LR        39           1260                     0.810   0.719    0.889
+ B_noVH_allrows    RF        39           1260                     0.797   0.698    0.886
+
+ever_farm (majority of circle was farmland 1985-2021) in missed plantations vs real forest:
+            run  missed_with_farm  missed_n  realforest_with_farm  realforest_n  fisher_p
+A_noVH_ablation                 2        10                    51           370    0.6361
+  A_withVH_spec                 2        10                    51           370    0.6361
+ B_noVH_allrows                14        39                   188          1260    0.0013
+
+SAG-only baseline (sag_oct_nov_mean alone) vs primary feature set, AUC across folds:
+           run model  AUC_sag_only   AUC_primary  paired_gain  paired_gain_sd folds_improved
+ A_withVH_spec    LR 0.904 ± 0.071 0.929 ± 0.055        0.026           0.016            5/5
+ A_withVH_spec    RF 0.894 ± 0.056 0.926 ± 0.045        0.033           0.013            5/5
+B_noVH_allrows    LR 0.870 ± 0.015 0.907 ± 0.021        0.037           0.022            5/5
+B_noVH_allrows    RF 0.840 ± 0.006 0.916 ± 0.014        0.076           0.016            5/5
+
+Saved outputs to /mnt/user-data/outputs

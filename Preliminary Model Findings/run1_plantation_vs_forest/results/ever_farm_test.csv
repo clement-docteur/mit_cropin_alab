@@ -1,0 +1,4 @@
+run,missed_with_farm,missed_n,realforest_with_farm,realforest_n,fisher_p
+A_noVH_ablation,2,10,51,370,0.6360838506322177
+A_withVH_spec,2,10,51,370,0.6360838506322177
+B_noVH_allrows,14,39,188,1260,0.001263303134008001

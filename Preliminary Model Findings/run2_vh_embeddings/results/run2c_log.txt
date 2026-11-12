@@ -1,0 +1,21 @@
+n=1830  forest=1402  plantation=428
+
+[1] Each feature alone (outcome = forest; OR > 1 = more forest-like):
+          feature  alone_auc_spatial_cv  odds_ratio_per_SD  robust_or_low  robust_or_high  robust_p
+ sag_oct_nov_mean                 0.867              0.153          0.120           0.195       0.0
+          vv_mean                 0.751              3.120          2.562           3.801       0.0
+   sag_swing_mean                 0.728              2.489          1.973           3.140       0.0
+          vh_mean                 0.684              2.099          1.790           2.462       0.0
+        ever_farm                 0.659              0.486          0.432           0.546       0.0
+    height_stdDev                 0.649              0.555          0.476           0.646       0.0
+ndvi_aug_oct_mean                 0.516              1.434          1.258           1.634       0.0
+
+[2] Can the 64 embeddings reproduce each feature? (ridge, held-out municipalities)
+          feature  oof_r2_from_embeddings
+          vv_mean                   0.737
+          vh_mean                   0.714
+ sag_oct_nov_mean                   0.670
+ndvi_aug_oct_mean                   0.613
+   sag_swing_mean                   0.451
+   ever_farm_mean                   0.238
+    height_stdDev                   0.168
