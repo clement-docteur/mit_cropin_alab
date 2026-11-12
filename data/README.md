@@ -9,7 +9,7 @@
 | `raw/cropin_qc/` | `cropin_brazil_qc_forest_plantation_1.geojson`: 433 QC polygons, property `qc_label` (310 plantation, 123 forest) | Cropin (sponsor) | No |
 | `raw/mapbiomas_validation/` | MapBiomas 85k validation points shapefile (209 MB `.dbf`) | MapBiomas, shared by Deepak (Cropin) | No (too large) |
 | `gee_assets/` | `cropin_qc.zip` (QC polygons with an added `id` 0–432) and `mapbiomas_ref_south.zip` (2,290 southern reference points), as uploaded to Earth Engine | Built by us | No |
-| `gee_exports/` | The seven CSVs exported from Earth Engine (described below) | `gee/02_*.js`, `gee/03_*.js`, `gee/04_*.js` | No |
+| `gee_exports/` | The eleven CSVs exported from Earth Engine (described below) | `gee/02_*.js` … `gee/05_*.js` | No |
 | `processed/` | `qc_features.csv` (notebook 01), `mapbiomas_ref_south.{gpkg,csv}` (`src/build_mapbiomas_ref_south.py`) | Derived | No |
 
 Earth Engine assets, project `cropin-510901`:
@@ -98,6 +98,17 @@ Same SAG settings as `qc_sag_timeseries.csv`, on the 2,290 MapBiomas reference p
 | `date`, `tile` | – | As in `qc_sag_timeseries.csv` (tile overlaps give two rows per id-date) |
 | `mean` | degrees | SAG, mean of the valid pixels in the 15 m circle |
 | `count` | pixels | Number of valid 10 m pixels used |
+
+### `gee_exports/ref_s2_bands_by_month_{PR,SC,RS}.csv` and `qc_s2_bands_by_month.csv` (from `gee/05_s2_bands_by_month_export.js`)
+One row per reference point (2,290, buffered by 15 m) or QC polygon (433). Calendar-month median composites
+pooled over 2019-01-01 to 2022-12-31, same cloud mask as `gee/03`/`gee/04` (CLOUDY_PIXEL_PERCENTAGE < 90,
+Cloud Score+ cs ≥ 0.6). 144 value columns.
+| Column | Unit | Definition |
+|---|---|---|
+| `id`, `label`, `state`, `high_conf` (ref) / `id`, `qc_label` (QC) | – | As in the other exports |
+| `<band>_<MM>` | reflectance × 10,000 | Median of band B2, B3, B4, B5, B6, B7, B8, B8A, B11 or B12 in calendar month MM (01–12), mean over the circle or polygon. 20 m bands read at 10 m |
+| `SAG_<MM>` | degrees | Median SAG in month MM, same formula and dark-pixel rule as `qc_sag_timeseries.csv` |
+| `n_<MM>` | images | Average number of clear observations per pixel behind that month's median |
 
 ### `processed/qc_features.csv` (written by `notebooks/01_qc_error_analysis.ipynb`)
 A merged with B plus the derived features defined in notebook 01, section b.

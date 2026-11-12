@@ -1,11 +1,12 @@
-# QC error analysis: findings so far (Meera, updated 2026-11-04)
+# QC error analysis: findings so far (Meera, updated 2026-11-12)
 
 **Data.** Cropin's 433 hand-checked alerts: 310 plantation harvests (false alarms) and 123 real
 deforestation. Every case was already called forest by Cropin's layer and already cleared, so the
 sample is **biased and pre-filtered**. 13 rows repeat another polygon exactly; results barely
 change without them. Everything below is **exploratory**: features were chosen on these same
 cases. Full working: `notebooks/01_qc_error_analysis.ipynb`, `02_cropin_layers_and_SAG.ipynb` and
-`03_sag_on_mapbiomas_reference.ipynb` (SAG on independent data).
+`03_sag_on_mapbiomas_reference.ipynb` (SAG on independent data) and `04_s2_bands_by_month.ipynb` (all
+Sentinel-2 bands by month).
 
 **How to read the numbers.**
 - **AUC**: the chance a random plantation scores more plantation-like than a random forest (0.5 = coin flip).
@@ -74,6 +75,30 @@ point widened to a 15 m circle. These are a landscape sample, not alerts.
   plantation-like tail (90th percentile 160° vs 157°), likely the dark native pine cases.
 - **So:** SAG is a real signal, not a QC quirk, but the operating **cutoff must be set on a sample of
   alerts**, not on the general landscape.
+
+## All Sentinel-2 bands, by month (notebook 04)
+Deepak asked (11/4) for the whole spectrum, especially SWIR B11/B12, and for Dec–Jan to be compared with
+other months. Monthly medians of all 10 bands (2019–2022) on both sets.
+- **SAG is still the best single signal**, and its best months are Oct–Dec: November AUC 0.89 (reference)
+  and 0.88 (QC), against 0.85 / 0.83 for Dec–Jan.
+- **SWIR is real but modest and not seasonal.** It's lower in plantations every month, with a best AUC of
+  about 0.71 (B11) and 0.68 (B12). Adding B11 + B12 to SAG gives +0.006 AUC on both sets (Nathan found the
+  same for B11).
+- **Other bands add information in two seasons.** Red edge and NIR (B6–B8A) are lower in plantations in
+  Oct–Dec (AUC 0.77–0.79 on reference, weaker on QC). The NDMI, NBR and NDRE indices flip to *higher* in
+  plantations in May–Jul (about 0.70 on reference, 0.75–0.80 on QC).
+- **The pattern is general.** Reference and QC cell AUCs agree (Spearman 0.78), and 98% of cells
+  significant on both sets point the same way.
+- **Combined.** All 10 bands in Oct–Jan and Apr–Sep, plus SAG (spatial CV, nested ≤ 5% cutoff):
+
+| Set | AUC, SAG only → all bands | Caught at ≈ 5% hidden |
+|---|---|---|
+| Reference points | 0.89 → **0.93** | 53% → **76%** |
+| QC (exploratory) | 0.85 → **0.92** | 35% → **62%** |
+| Train on reference, test on QC | 0.86 → **0.92** [0.89–0.95] | 56% → 76%, but **hides 9–10% of QC forest** |
+
+- **Still to do.** Find the smallest band set that keeps the gain. The cutoff still has to be set on real
+  alerts.
 
 ## Caveats
 - **Biased, small sample.** Precision depends on the unknown real class mix, and "5% of forest" is
