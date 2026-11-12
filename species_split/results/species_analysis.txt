@@ -1,0 +1,93 @@
+====================================================================================================
+SDPT polygons near our points (clipped): 1499 {'pine': 943, 'eucalyptus': 481, 'young/clearing': 45, 'acacia': 26, 'other/unknown': 4}
+
+1. Where are the MapBiomas points in SDPT (polygon containing the point, 2013-14 mapping)?
+label           natural forest (ref)  plantation (ref) plantation share
+sdpt_species                                                           
+pine                              16               168              39%
+eucalyptus                         6                87              20%
+acacia                             0                 7               2%
+young/clearing                     0                11               3%
+other/unknown                      0                 0               0%
+none                            1380               155              36%
+   (counting a polygon within 30 m too): {'pine': 184, 'eucalyptus': 94, 'acacia': 7, 'young/clearing': 12, 'other/unknown': 0, 'none': 131} | forest: {'pine': 31, 'eucalyptus': 15, 'acacia': 0, 'young/clearing': 0, 'other/unknown': 0, 'none': 1356}
+
+2. Plantation area mapped by SDPT (2013-14) within 30 km of the MapBiomas points, thousand ha
+state              PR     RS     SC     all
+species                                    
+pine            855.0  329.0  653.0  1837.0
+eucalyptus      177.0  288.0  501.0   967.0
+acacia            0.0   74.0    1.0    75.0
+young/clearing   75.0   21.0   28.0   123.0
+other/unknown     3.0    4.0    2.0     8.0
+   pine : eucalyptus by mapped area = 66% : 34%; among MapBiomas plantation points inside SDPT = 66% : 34% (n = 255; binomial p = 0.95)
+   PR: area pine 83% | points pine 66/83
+   SC: area pine 57% | points pine 63/105
+   RS: area pine 53% | points pine 39/67
+
+3. Plantations missed by each model (threshold: <= 5% of natural forest flagged), by SDPT species
+                                           pine   eucalyptus     acacia young/clearing other/unknown          none Fisher p (pine vs euc) clustered p
+model                                                                                                                                                
+H-all, random forest (main model)  30/168 (18%)  14/87 (16%)  1/7 (14%)      0/11 (0%)       0/0 (-)  50/155 (32%)                   0.86        0.73
+H-all, logistic regression         30/168 (18%)  14/87 (16%)  1/7 (14%)      0/11 (0%)       0/0 (-)  46/155 (30%)                   0.86        0.73
+H4, random forest                  48/168 (29%)  26/87 (30%)  1/7 (14%)      1/11 (9%)       0/0 (-)  71/155 (46%)                   0.88        0.82
+36 yearly values, random forest      7/168 (4%)    7/87 (8%)   0/7 (0%)      1/11 (9%)       0/0 (-)  28/155 (18%)                   0.25         0.2
+H-all + variability, RF             11/168 (7%)    7/87 (8%)   0/7 (0%)      0/11 (0%)       0/0 (-)  36/155 (23%)                    0.8        0.66
+
+   Main model: species mix of the 95 missed vs the 333 caught plantations
+                missed  caught missed % caught %
+sdpt_species                                    
+pine                30     138      32%      41%
+eucalyptus          14      73      15%      22%
+acacia               1       6       1%       2%
+young/clearing       0      11       0%       3%
+other/unknown        0       0       0%       0%
+none                50     105      53%      32%
+   odds ratio of being missed, pine vs eucalyptus: 1.13 (0.57-2.27)
+   sensitivity (polygon within 30 m): pine missed 36/184 (20%)
+   sensitivity (polygon within 30 m): eucalyptus missed 15/94 (16%)
+
+4. Natural-forest reference points the main model calls plantation: 67 of 1402
+   SDPT at those points: {'none': 62, 'pine': 4, 'eucalyptus': 1}
+   SDPT at the other forest points: {'none': 1318, 'pine': 12, 'eucalyptus': 5}
+   forest points inside an SDPT plantation: flagged 7% vs not flagged 1% (Fisher p = 0.003)
+   H-all, random forest (main model): 67 forest flagged, 5 inside SDPT (4 pine, 1 eucalyptus)
+   H-all, logistic regression: 70 forest flagged, 6 inside SDPT (5 pine, 1 eucalyptus)
+   H4, random forest: 69 forest flagged, 5 inside SDPT (4 pine, 1 eucalyptus)
+   36 yearly values, random forest: 67 forest flagged, 8 inside SDPT (7 pine, 1 eucalyptus)
+   H-all + variability, RF: 68 forest flagged, 5 inside SDPT (4 pine, 1 eucalyptus)
+   forest points inside SDPT plantations: 22; any year labelled plantation by MapBiomas reference 1985-2022: 2
+
+5. Harvest features by SDPT species, MapBiomas plantation points (natural forest outside SDPT for reference)
+                              points a cut a cycle 2+ cycles mean cuts abrupt start forest since 1985 cut 2010-20 median NBR sd caught (H-all RF)
+pine                             168   82%     75%       39%      1.58          49%                1%         45%         0.177               82%
+eucalyptus                        87   75%     72%       44%      1.55          47%                1%         44%         0.170               84%
+acacia                             7   86%     71%       71%      2.14          29%                0%         71%         0.143               86%
+young/clearing                    11  100%    100%       91%      2.55          64%                0%        100%         0.219              100%
+none                             155   69%     66%       32%      1.26          37%                3%         38%         0.138               68%
+natural forest (outside SDPT)   1380   13%     13%        2%      0.16           1%               45%          1%         0.039                4%
+   has_cut: pine 82% vs eucalyptus 75%; Fisher p = 0.19, clustered p = 0.18
+   has_cycle: pine 75% vs eucalyptus 72%; Fisher p = 0.65, clustered p = 0.67
+   two_plus_cycles: pine 39% vs eucalyptus 44%; Fisher p = 0.5, clustered p = 0.5
+   abrupt_start: pine 49% vs eucalyptus 47%; Fisher p = 0.79, clustered p = 0.74
+   forest_since_1985: pine 1% vs eucalyptus 1%; Fisher p = 1, clustered p = 0.64
+   n_cuts: Mann-Whitney p = 0.8; NBR sd p = 0.11
+   years between consecutive cuts: pine median 11.00 (n = 128), eucalyptus 11.00 (n = 70), not in SDPT 8.00 (n = 89); pine vs eucalyptus Mann-Whitney p = 0.92
+   years to regrow 80% (cycles): pine median 2.42 (n = 210), eucalyptus 2.45 (n = 114), not in SDPT 1.80 (n = 169); pine vs eucalyptus Mann-Whitney p = 0.79
+   size of the NBR fall: pine median 0.39 (n = 266), eucalyptus 0.33 (n = 135), not in SDPT 0.29 (n = 196); pine vs eucalyptus Mann-Whitney p = 0.055
+   pine: intervals <= 8 years 41%, 9-14 years 27%, > 14 years 33%
+   eucalyptus: intervals <= 8 years 40%, 9-14 years 29%, > 14 years 31%
+   none: intervals <= 8 years 51%, 9-14 years 20%, > 14 years 29%
+
+5b. Plantations inside an SDPT polygon (large industrial) vs outside it
+   H-all, random forest (main model): missed outside SDPT 50/155 (32%), inside 45/273 (16%); Fisher p = 0.00026, clustered p = 0.0002
+   H-all, logistic regression: missed outside SDPT 46/155 (30%), inside 45/273 (16%); Fisher p = 0.002, clustered p = 0.00094
+   H4, random forest: missed outside SDPT 71/155 (46%), inside 76/273 (28%); Fisher p = 0.00021, clustered p = 0.00023
+   36 yearly values, random forest: missed outside SDPT 28/155 (18%), inside 15/273 (5%); Fisher p = 7.7e-05, clustered p = 2.7e-05
+   H-all + variability, RF: missed outside SDPT 36/155 (23%), inside 18/273 (7%); Fisher p = 1.4e-06, clustered p = 3.2e-06
+   by state, main model, share missed: {'PR': {'outside SDPT': 0.29, 'inside SDPT': 0.13}, 'RS': {'outside SDPT': 0.28, 'inside SDPT': 0.17}, 'SC': {'outside SDPT': 0.42, 'inside SDPT': 0.19}}
+   MapBiomas 10 m map's call at those plantations: {'inside SDPT': {'caught plantation': 253, 'missed plantation': 9, 'other': 11}, 'outside SDPT': {'caught plantation': 116, 'missed plantation': 30, 'other': 9}}
+
+6. Cropin QC clearings: SDPT species at the clearing's point (labels not available here): {'none': 431, 'pine': 1, 'eucalyptus': 1} | within 30 m: {'none': 416, 'pine': 9, 'eucalyptus': 8}
+
+wrote 162 misclassified points
