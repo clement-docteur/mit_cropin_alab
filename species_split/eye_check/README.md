@@ -39,8 +39,14 @@ Answers go in the recording page, which shows our data for a point only after it
 1. In Google Earth Pro, turn on historical imagery (the clock icon) and step through every date.
 2. Record what is in the yellow square in the most recent image.
 3. Record the year of the oldest sharp image, and what was in the square then.
-4. Mark each year a clear-cut or thinning first shows.
-5. Rate how sure you are of the species and of the cut years.
+4. Mark every year that has a sharp image.
+5. Mark each year a clear-cut or thinning first shows.
+6. Rate how sure you are of the species and of the cut years.
+
+Google Earth often has only about 10 sharp dates per point. A eucalyptus clear-cut shows as bare ground for months
+and as young rows for 2–3 years, so a gap of 3 years or more between images can hide a cut. The image dates let the
+comparison count a detected cut as "not marked" only when an image within 2 years after it could have shown it. The
+other detected cuts are listed separately, as falling in an imagery gap.
 
 Answers are stored with the page, where Claude can read them back to tally:
 
