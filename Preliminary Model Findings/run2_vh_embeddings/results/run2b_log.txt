@@ -1,0 +1,25 @@
+n=1830  plantations=428  forest=1402  missed plantations=39  MapBiomas: forest recall=0.8987, FP=39
+handcrafted kept in 'C_drop2': ['vh_mean', 'ndvi_aug_oct_mean', 'sag_oct_nov_mean', 'sag_swing_mean']  (dropped: height_stdDev, ever_farm)
+[fit] RF|C_drop2                       69s  n_features=68
+[fit] LR-L2|C_drop2                     3s  n_features=68  C per fold=['0.1', '0.0316', '0.316', '0.1', '0.1']
+[fit] RF|C_reordered (noise check)     66s  n_features=70
+
+[METRICS] (MapBiomas: forest recall 0.899, FP 39)
+                        spec  forest_recall  fp  fp_rate  mb_fp  fp_reduction_vs_mb  missed_rejected  new_fp_caught  new_fp_other  auc_pooled  auc_fold_mean  auc_fold_sd  expost_matched_fp
+                        RF|B          0.900  45    0.105     39                  -6               21             27             0       0.959          0.960        0.016                 45
+                        RF|C          0.904  33    0.077     39                   6               24             17             1       0.964          0.966        0.013                 34
+                     LR-L2|B          0.905  30    0.070     39                   9               25             16             0       0.968          0.968        0.013                 28
+                     LR-L2|C          0.899  27    0.063     39                  12               25             13             0       0.975          0.975        0.011                 25
+                  RF|C_drop2          0.899  35    0.082     39                   4               23             18             1       0.963          0.964        0.013                 35
+               LR-L2|C_drop2          0.894  23    0.054     39                  16               24              8             0       0.973          0.974        0.012                 24
+RF|C_reordered (noise check)          0.900  34    0.079     39                   5               24             18             1       0.964          0.965        0.014                 33
+
+[PAIRED] FP count difference (first - second; NEGATIVE = fewer FP for the first), 95% bootstrap CI over municipalities, same resamples as run 2:
+                                              comparison  fp_a  fp_b  fp_diff  ci_low  ci_high  recall_diff  recall_ci_low  recall_ci_high  missed_rejected_diff  auc_diff  expost_fp_diff  expost_ci_low  expost_ci_high
+                     RF: C without height+farm  minus  C    35    33        2    -2.0    6.000       -0.004         -0.011           0.002                    -1    -0.002               1           -4.0           8.000
+RF NOISE CHECK: C reordered minus C (identical features)    34    33        1    -3.0    5.000       -0.004         -0.009           0.001                     0    -0.000              -1           -4.0           7.000
+                  L2-LR: C without height+farm  minus  C    23    27       -4   -10.0    1.000       -0.005         -0.014           0.004                    -1    -0.002              -1           -7.0           5.025
+   RF: C without height+farm  minus  B (embeddings only)    35    45      -10   -18.0   -2.975       -0.001         -0.012           0.010                     2     0.003             -10          -19.0          -1.000
+L2-LR: C without height+farm  minus  B (embeddings only)    23    30       -7   -14.0    0.000       -0.011         -0.023          -0.001                    -1     0.005              -4          -13.0           3.000
+
+Done in 2.3 min

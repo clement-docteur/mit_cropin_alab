@@ -1,0 +1,12 @@
+{
+  "iterations": 8,
+  "final_max_coef_change": 4.334430993999303e-16,
+  "converged": true,
+  "max_abs_diff_vs_sklearn": 2.0655736017449744e-08,
+  "n": 1830,
+  "n_clusters": 608,
+  "robust_factor": 1.00494414677546,
+  "max_wald_se": 0.12187480529082581,
+  "max_abs_coef": 2.090638345355802,
+  "possible_separation": false
+}

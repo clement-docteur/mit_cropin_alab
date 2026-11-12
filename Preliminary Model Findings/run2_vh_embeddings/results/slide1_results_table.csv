@@ -1,0 +1,6 @@
+Model,Forest recall,AUC,Accuracy,FP,Change in FP vs MapBiomas (95% CI)
+MapBiomas,0.899,n/a,0.901,39,baseline
+RF · A,0.898,0.924,0.878,81,+108% (+52 to +208)
+RF · B,0.900,0.959,0.899,45,+15% (−18 to +69)
+RF · C,0.904,0.964,0.908,33,−15% (−41 to +24)
+L2-LR · C,0.899,0.975,0.908,27,−31% (−54 to +3)

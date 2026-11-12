@@ -1,0 +1,7 @@
+,height_stdDev,vh_mean,ndvi_aug_oct_mean,sag_oct_nov_mean,sag_swing_mean,ever_farm
+height_stdDev,1.0,0.08,0.08,0.06,0.05,0.15
+vh_mean,0.08,1.0,0.14,0.21,0.11,0.03
+ndvi_aug_oct_mean,0.08,0.14,1.0,0.14,0.21,0.06
+sag_oct_nov_mean,0.06,0.21,0.14,1.0,0.52,0.14
+sag_swing_mean,0.05,0.11,0.21,0.52,1.0,0.11
+ever_farm,0.15,0.03,0.06,0.14,0.11,1.0
