@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>Harvest-cycle eye check (30 points)</name>
+  <Style id="pin"><IconStyle><scale>0.8</scale></IconStyle><LabelStyle><scale>1.1</scale></LabelStyle></Style>
+  <Style id="px"><LineStyle><color>ff00ffff</color><width>2</width></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+  <Placemark><name>E01</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-50.3302181,-29.1392795,0</coordinates></Point></Placemark>
+  <Placemark><name>E01 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-50.3303723,-29.1394143,0 -50.3300638,-29.1394143,0 -50.3300638,-29.1391448,0 -50.3303723,-29.1391448,0 -50.3303723,-29.1394143,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E02</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-50.1992437,-23.9687564,0</coordinates></Point></Placemark>
+  <Placemark><name>E02 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-50.1993912,-23.9688912,0 -50.1990962,-23.9688912,0 -50.1990962,-23.9686217,0 -50.1993912,-23.9686217,0 -50.1993912,-23.9688912,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E03</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-53.7072547,-26.0918348,0</coordinates></Point></Placemark>
+  <Placemark><name>E03 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-53.7074048,-26.0919695,0 -53.7071047,-26.0919695,0 -53.7071047,-26.0917000,0 -53.7074048,-26.0917000,0 -53.7074048,-26.0919695,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E04</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-50.9592184,-24.8214373,0</coordinates></Point></Placemark>
+  <Placemark><name>E04 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-50.9593669,-24.8215720,0 -50.9590700,-24.8215720,0 -50.9590700,-24.8213026,0 -50.9593669,-24.8213026,0 -50.9593669,-24.8215720,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E05</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-53.1197565,-32.0349989,0</coordinates></Point></Placemark>
+  <Placemark><name>E05 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-53.1199155,-32.0351336,0 -53.1195976,-32.0351336,0 -53.1195976,-32.0348641,0 -53.1199155,-32.0348641,0 -53.1199155,-32.0351336,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E06</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-50.5495867,-25.0281396,0</coordinates></Point></Placemark>
+  <Placemark><name>E06 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-50.5497354,-25.0282744,0 -50.5494380,-25.0282744,0 -50.5494380,-25.0280049,0 -50.5497354,-25.0280049,0 -50.5497354,-25.0282744,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E07</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-52.2735435,-30.3449983,0</coordinates></Point></Placemark>
+  <Placemark><name>E07 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-52.2736997,-30.3451331,0 -52.2733874,-30.3451331,0 -52.2733874,-30.3448636,0 -52.2736997,-30.3448636,0 -52.2736997,-30.3451331,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E08</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-49.2748773,-25.9390313,0</coordinates></Point></Placemark>
+  <Placemark><name>E08 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-49.2750271,-25.9391661,0 -49.2747274,-25.9391661,0 -49.2747274,-25.9388966,0 -49.2750271,-25.9388966,0 -49.2750271,-25.9391661,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E09</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-48.6464159,-27.5498005,0</coordinates></Point></Placemark>
+  <Placemark><name>E09 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-48.6465679,-27.5499352,0 -48.6462639,-27.5499352,0 -48.6462639,-27.5496657,0 -48.6465679,-27.5496657,0 -48.6465679,-27.5499352,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E10</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-48.8054177,-27.1202261,0</coordinates></Point></Placemark>
+  <Placemark><name>E10 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-48.8055691,-27.1203609,0 -48.8052663,-27.1203609,0 -48.8052663,-27.1200914,0 -48.8055691,-27.1200914,0 -48.8055691,-27.1203609,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E11</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-53.2784888,-32.1581579,0</coordinates></Point></Placemark>
+  <Placemark><name>E11 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-53.2786480,-32.1582926,0 -53.2783297,-32.1582926,0 -53.2783297,-32.1580231,0 -53.2786480,-32.1580231,0 -53.2786480,-32.1582926,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E12</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-49.3457543,-28.0332738,0</coordinates></Point></Placemark>
+  <Placemark><name>E12 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-49.3459070,-28.0334085,0 -49.3456017,-28.0334085,0 -49.3456017,-28.0331390,0 -49.3459070,-28.0331390,0 -49.3459070,-28.0334085,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E13</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-53.4660571,-31.4415718,0</coordinates></Point></Placemark>
+  <Placemark><name>E13 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-53.4662150,-31.4417065,0 -53.4658991,-31.4417065,0 -53.4658991,-31.4414370,0 -53.4662150,-31.4414370,0 -53.4662150,-31.4417065,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E14</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-50.8560020,-26.0112559,0</coordinates></Point></Placemark>
+  <Placemark><name>E14 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-50.8561519,-26.0113906,0 -50.8558521,-26.0113906,0 -50.8558521,-26.0111211,0 -50.8561519,-26.0111211,0 -50.8561519,-26.0113906,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E15</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-50.6169603,-26.9162187,0</coordinates></Point></Placemark>
+  <Placemark><name>E15 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-50.6171114,-26.9163535,0 -50.6168092,-26.9163535,0 -50.6168092,-26.9160840,0 -50.6171114,-26.9160840,0 -50.6171114,-26.9163535,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E16</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-49.6260287,-24.3325741,0</coordinates></Point></Placemark>
+  <Placemark><name>E16 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-49.6261766,-24.3327089,0 -49.6258808,-24.3327089,0 -49.6258808,-24.3324394,0 -49.6261766,-24.3324394,0 -49.6261766,-24.3327089,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E17</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-49.6470493,-26.9132543,0</coordinates></Point></Placemark>
+  <Placemark><name>E17 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-49.6472004,-26.9133890,0 -49.6468982,-26.9133890,0 -49.6468982,-26.9131195,0 -49.6472004,-26.9131195,0 -49.6472004,-26.9133890,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E18</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-51.2621303,-25.8182978,0</coordinates></Point></Placemark>
+  <Placemark><name>E18 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-51.2622800,-25.8184325,0 -51.2619807,-25.8184325,0 -51.2619807,-25.8181630,0 -51.2622800,-25.8181630,0 -51.2622800,-25.8184325,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E19</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-49.1571081,-28.7385411,0</coordinates></Point></Placemark>
+  <Placemark><name>E19 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-49.1572618,-28.7386758,0 -49.1569545,-28.7386758,0 -49.1569545,-28.7384063,0 -49.1572618,-28.7384063,0 -49.1572618,-28.7386758,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E20</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-52.7394997,-25.0674859,0</coordinates></Point></Placemark>
+  <Placemark><name>E20 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-52.7396484,-25.0676206,0 -52.7393509,-25.0676206,0 -52.7393509,-25.0673511,0 -52.7396484,-25.0673511,0 -52.7396484,-25.0676206,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E21</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-50.4129529,-29.5230398,0</coordinates></Point></Placemark>
+  <Placemark><name>E21 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-50.4131078,-29.5231746,0 -50.4127981,-29.5231746,0 -50.4127981,-29.5229051,0 -50.4131078,-29.5229051,0 -50.4131078,-29.5231746,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E22</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-55.1584831,-30.5840400,0</coordinates></Point></Placemark>
+  <Placemark><name>E22 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-55.1586396,-30.5841748,0 -55.1583265,-30.5841748,0 -55.1583265,-30.5839053,0 -55.1586396,-30.5839053,0 -55.1586396,-30.5841748,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E23</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-53.5560683,-29.6459294,0</coordinates></Point></Placemark>
+  <Placemark><name>E23 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-53.5562233,-29.6460641,0 -53.5559132,-29.6460641,0 -53.5559132,-29.6457946,0 -53.5562233,-29.6457946,0 -53.5562233,-29.6460641,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E24</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-53.5663091,-26.7944072,0</coordinates></Point></Placemark>
+  <Placemark><name>E24 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-53.5664600,-26.7945419,0 -53.5661581,-26.7945419,0 -53.5661581,-26.7942724,0 -53.5664600,-26.7942724,0 -53.5664600,-26.7945419,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E25</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-52.0819329,-30.1727913,0</coordinates></Point></Placemark>
+  <Placemark><name>E25 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-52.0820887,-30.1729260,0 -52.0817770,-30.1729260,0 -52.0817770,-30.1726565,0 -52.0820887,-30.1726565,0 -52.0820887,-30.1729260,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E26</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-50.1731027,-26.1373794,0</coordinates></Point></Placemark>
+  <Placemark><name>E26 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-50.1732528,-26.1375141,0 -50.1729526,-26.1375141,0 -50.1729526,-26.1372446,0 -50.1732528,-26.1372446,0 -50.1732528,-26.1375141,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E27</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-51.3462127,-29.2729489,0</coordinates></Point></Placemark>
+  <Placemark><name>E27 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-51.3463671,-29.2730836,0 -51.3460582,-29.2730836,0 -51.3460582,-29.2728141,0 -51.3463671,-29.2728141,0 -51.3463671,-29.2730836,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E28</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-51.5238096,-26.8698656,0</coordinates></Point></Placemark>
+  <Placemark><name>E28 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-51.5239606,-26.8700004,0 -51.5236585,-26.8700004,0 -51.5236585,-26.8697309,0 -51.5239606,-26.8697309,0 -51.5239606,-26.8700004,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E29</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-49.2878130,-27.9610492,0</coordinates></Point></Placemark>
+  <Placemark><name>E29 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-49.2879656,-27.9611840,0 -49.2876605,-27.9611840,0 -49.2876605,-27.9609145,0 -49.2879656,-27.9609145,0 -49.2879656,-27.9611840,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+  <Placemark><name>E30</name><styleUrl>#pin</styleUrl>
+    <Point><coordinates>-49.2207089,-26.4745171,0</coordinates></Point></Placemark>
+  <Placemark><name>E30 pixel</name><styleUrl>#px</styleUrl>
+    <Polygon><outerBoundaryIs><LinearRing><coordinates>-49.2208594,-26.4746518,0 -49.2205583,-26.4746518,0 -49.2205583,-26.4743823,0 -49.2208594,-26.4743823,0 -49.2208594,-26.4746518,0</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+</Document></kml>
