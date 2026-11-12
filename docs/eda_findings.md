@@ -97,8 +97,22 @@ other months. Monthly medians of all 10 bands (2019–2022) on both sets.
 | QC (exploratory) | 0.85 → **0.92** | 35% → **62%** |
 | Train on reference, test on QC | 0.86 → **0.92** [0.89–0.95] | 56% → 76%, but **hides 9–10% of QC forest** |
 
-- **Still to do.** Find the smallest band set that keeps the gain. The cutoff still has to be set on real
-  alerts.
+- **Six features keep most of the gain.** These are SAG Oct–Jan plus five **winter** (Apr–Sep)
+  features: red edge B6, narrow NIR B8A, SAG, NDMI and NDVI. They were chosen by forward selection on the
+  reference points, and the top five were picked in 10–20 of 20 block resamples.
+
+| Model | Reference AUC | QC AUC | Train ref → test QC |
+|---|---|---|---|
+| SAG only | 0.89 | 0.85 | 0.86, 58% caught |
+| **6-feature short list** | **0.93** | **0.90** | **0.90 [0.87–0.94], 74% caught** |
+| All 30 season features | 0.94 | 0.92 | 0.92, 77% caught |
+
+  With the selection redone inside each fold, the short list still scores 0.927, so the figure isn't
+  inflated. B6 and B8A are 98% correlated and work as a pair: plantations have high B6 relative to B8A in
+  winter. SWIR adds nothing once these are in (dropping B11 or B12 changes AUC by < 0.001).
+- **Still to do.** Compare with Nathan's Lean-4 and Julia's models on the same splits. The cutoff still has
+  to be set on real alerts: trained on reference, it hides 8–13% of QC forest, and that figure moves by a
+  few forests between runs.
 
 ## Caveats
 - **Biased, small sample.** Precision depends on the unknown real class mix, and "5% of forest" is

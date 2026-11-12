@@ -28,7 +28,7 @@ many are **plantation harvests** (eucalyptus, pine), not deforestation. Goal: an
 | `notebooks/01_qc_error_analysis.ipynb` | Benchmark, findings 1–6, combined model, reproducibility check |
 | `notebooks/02_cropin_layers_and_SAG.ipynb` | Cropin layer and MapBiomas 10 m benchmark, SAG validation, Meta 1 m, SAG in the model |
 | `notebooks/03_sag_on_mapbiomas_reference.ipynb` | SAG on the independent MapBiomas reference points; does the cutoff transfer to the QC set |
-| `notebooks/04_s2_bands_by_month.ipynb` | Band × month AUC grid for all Sentinel-2 bands on both sets; do the extra bands add beyond SAG |
+| `notebooks/04_s2_bands_by_month.ipynb` | Band × month AUC grid for all Sentinel-2 bands on both sets; do the extra bands add beyond SAG; 6-feature short list |
 | `figures/` | PNGs written by the notebooks (`01*` … `04*`) |
 | `docs/eda_findings.md` | One-page team summary with current numbers |
 | `docs/old_analysis/` | Aggregate stats from the old quick scripts (for the reproducibility check) |
@@ -122,5 +122,7 @@ notebooks filter them, and `cv_evaluate` asserts that predictions are finite.
   - SWIR B11/B12 are modest (≈ 0.70) and add almost nothing to SAG (+0.006 AUC);
   - all 10 bands in Oct–Jan and Apr–Sep on top of SAG: reference AUC 0.89 → 0.93 (caught 53% → 76%), QC
     0.85 → 0.92 (35% → 62%); trained on reference and tested on QC, 0.92, but the cutoff still hides 9–10%
-    of QC forest.
+    of QC forest;
+  - a 6-feature short list (SAG Oct–Jan plus winter B6, B8A, SAG, NDMI and NDVI) keeps most of it:
+    reference 0.93, QC 0.90, reference → QC 0.90 with 74% caught.
 - **Cropin's posterior ≥ 0.8:** 68% caught, but 16% of forest flagged.
