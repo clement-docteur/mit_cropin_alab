@@ -44,7 +44,7 @@ the project lead and an AI coding assistant (Claude Code), so that others can co
 - **Segmentation:** despike one-year spikes, then LandTrendr-like piecewise-linear fit, up to **18** segments, chosen by
   BIC (LandTrendr's usual 6 fits only ~2 cuts).
 - **Events:** *cut* = fall ≥ **0.20** NBR within ≤ **3** years between segment ends; *cycle* = cut that regrows **50%**
-  of the fall within **10** years; *regrowth time* = years to regrow **80%**; *abrupt start* = ≥ 3 open-land years then
+  of the fall within **10** years; *regrowth time* = years to regrow **80%**; *abrupt start* = ≥ 3 open-land years (of the last 8 values) then
   closed canopy within 5 years; *forest since 1985* = no cut and never below closed canopy.
 - **Feature sets:** H4 = n_cycles, regrow_speed, forest_since_1985, abrupt_start. H-all = H4 + n_cuts,
   years_since_last_cut, max_drop, s_frac_below_forest, s_min, s_max_drop3. Variability = s_std (picked after first

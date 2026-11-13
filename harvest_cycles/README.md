@@ -50,7 +50,7 @@ The features for the 2,264 analysis points are in `public_data/harvest_cycles/ha
 | `n_cycles` | Number of cut-and-regrow cycles: cuts that grow back half of the fall within 10 years |
 | `regrow_speed` | 1 / years for the quickest cycle to grow back 80% of its fall, counting at least 1 year (so at most 1; 0 if none does) |
 | `forest_since_1985` | 1 if no cut and NBR never below the closed-canopy level in any year 1985–2020 |
-| `abrupt_start` | 1 if the first closed-canopy year that follows at least 3 years at open-land level comes within 5 years of the last of them (a new stand on open ground) |
+| `abrupt_start` | A new stand on open ground: 1 if the first closed-canopy year preceded by at least 3 open-land years among the 8 yearly values ending at the last open year comes within 5 years of that last open year |
 | `n_cuts` | Number of cuts: NBR falls of at least 0.20 within at most 3 years between fitted segment ends |
 | `years_since_last_cut` | 2020 minus the year of the latest cut (40 if no cut) |
 | `max_drop` | Largest cut, in NBR (0 if no cut) |

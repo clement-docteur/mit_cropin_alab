@@ -19,7 +19,7 @@ import platform
 import subprocess
 import sys
 from dataclasses import asdict, dataclass, fields, replace
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, TypeVar
 
@@ -206,6 +206,13 @@ def with_overrides(settings: S, overrides: Iterable[str] | None) -> S:
     return new
 
 
+def _is_iso_date(text: str) -> bool:
+    try:
+        return date.fromisoformat(text).isoformat() == text
+    except ValueError:
+        return False
+
+
 def validate(s: PreprocessSettings | FeatureSettings) -> None:
     """Basic range and shape checks, so that a bad value fails at once with its name, not deep in a run."""
     problems = []
@@ -228,6 +235,13 @@ def validate(s: PreprocessSettings | FeatureSettings) -> None:
         need(months(s.dry_months), "dry_months", "months must be integers 1-12")
         need(s.scenes_per_season >= 1, "scenes_per_season", "must be at least 1")
         need(0 <= s.max_failed_scene_share <= 1, "max_failed_scene_share", "must be between 0 and 1")
+        need(_is_iso_date(s.slc_off_date), "slc_off_date", "must be a date written YYYY-MM-DD")
+        for name in ["offset_years_oli", "offset_years_tm"]:
+            v = getattr(s, name)
+            need(len(v) == 2 and all(isinstance(y, int) for y in v) and v[0] <= v[1], name,
+                 "must be [first year, last year]")
+        need(s.offset_pair_max_days >= 0 and s.offset_min_pairs >= 1, "offset_min_pairs",
+             "offset_pair_max_days must be >= 0 and offset_min_pairs >= 1")
         need(all(len(x) == 2 and x[0] in INDICES and x[1] in AGGREGATIONS for x in s.series), "series",
              f"pairs [index, aggregation] with index in {list(INDICES)} and aggregation in {list(AGGREGATIONS)}")
     else:

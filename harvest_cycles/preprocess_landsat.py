@@ -546,6 +546,11 @@ def yearly_series(obs: pd.DataFrame, index: str, aggregation: str, pids, s: Prep
 
 
 def build_observations(pts: pd.DataFrame, scenes: pd.DataFrame, pixel_dir: Path, s: PreprocessSettings, out: Path) -> None:
+    (out / "settings.json").unlink(missing_ok=True)    # the run record is rewritten when the run finishes
+    wanted = {f"series_{index}_{aggregation}.csv.gz" for index, aggregation in s.series} | {"series_obs_counts.csv.gz"}
+    for stale in out.glob("series_*.csv.gz"):            # series of an earlier run with other settings
+        if stale.name not in wanted:
+            stale.unlink()
     obs = load_pixels(pixel_dir, scenes, set(pts.pid))
     log.info("step 5: %d point observations, %d clear, %d points", len(obs), int(obs["clear"].sum()), obs.pid.nunique())
     obs = add_indices(obs, s)
@@ -588,31 +593,55 @@ def sample_hansen(pts: pd.DataFrame, s: PreprocessSettings, path: Path) -> None:
     last_loss = s.last_year - 2000
 
     def work(job):
+        """3x3 windows of one layer around the points of one tile. Neighbours outside the tile (points on the tile's
+        edge pixels) are returned as coordinates to read from the next tile."""
         t, layer = job
         with rasterio.open("/vsicurl/" + s.hansen_url.format(layer=layer, tile=t)) as src:
-            out = {}
+            out, outside = {}, []
             for r in p[p.tile == t].itertuples():
                 row, col = src.index(r.lon, r.lat)
                 w = src.read(1, window=Window(col - 1, row - 1, 3, 3), boundless=True, fill_value=0)
+                for i in range(3):
+                    for j in range(3):
+                        rr, cc = row - 1 + i, col - 1 + j
+                        if not (0 <= rr < src.height and 0 <= cc < src.width):
+                            outside.append((r.pid, layer, i, j, *src.xy(rr, cc)))
                 out[r.pid] = w
-        return layer, out
+        return layer, out, outside
+
+    def read_pixels(job):
+        """Single pixels of one layer of one tile: [(pid, layer, i, j, lon, lat), ...] -> values."""
+        (t, layer), pixels = job
+        with rasterio.open("/vsicurl/" + s.hansen_url.format(layer=layer, tile=t)) as src:
+            return [(pid, lyr, i, j, int(src.read(1, window=Window(c, r, 1, 1))[0, 0]))
+                    for pid, lyr, i, j, x, y in pixels for r, c in [src.index(x, y)]]
 
     jobs = [(t, layer) for t in p.tile.unique() for layer in ["treecover2000", "gain", "lossyear"]]
-    recs = {pid: {} for pid in p.pid}
+    windows, edge = {}, {}
     with thread_pool(12) as ex:
-        for layer, values in ex.map(work, jobs):
+        for layer, values, outside in ex.map(work, jobs):
             for pid, w in values.items():
-                r, c = recs[pid], int(w[1, 1])
-                if layer == "treecover2000":
-                    r["tc2000"], r["tc2000_3x3_mean"] = c, float(w.mean())
-                elif layer == "gain":
-                    r["gain"], r["gain_3x3_any"] = c, int((w > 0).any())
-                else:
-                    loss = w[w > 0]
-                    r["lossyear"], r["loss_3x3_n"] = c, int((w > 0).sum())
-                    r["loss_3x3_first"] = int(loss.min()) if loss.size else 0
-                    r["loss_3x3_le2020_n"] = int(((w > 0) & (w <= last_loss)).sum())   # losses up to last_year;
-                    # the column name keeps the default 2020
+                windows[(pid, layer)] = w
+            for px in outside:
+                edge.setdefault((tile(px[4], px[5]), layer), []).append(px)
+        for filled in ex.map(read_pixels, edge.items()):       # neighbours in the next tile
+            for pid, layer, i, j, v in filled:
+                windows[(pid, layer)][i, j] = v
+    if edge:
+        log.info("step 6: %d neighbour pixels read from an adjacent tile", sum(len(v) for v in edge.values()))
+    recs = {pid: {} for pid in p.pid}
+    for (pid, layer), w in windows.items():
+        r, c = recs[pid], int(w[1, 1])
+        if layer == "treecover2000":
+            r["tc2000"], r["tc2000_3x3_mean"] = c, float(w.mean())
+        elif layer == "gain":
+            r["gain"], r["gain_3x3_any"] = c, int((w > 0).any())
+        else:
+            loss = w[w > 0]
+            r["lossyear"], r["loss_3x3_n"] = c, int((w > 0).sum())
+            r["loss_3x3_first"] = int(loss.min()) if loss.size else 0
+            r["loss_3x3_le2020_n"] = int(((w > 0) & (w <= last_loss)).sum())   # losses up to last_year;
+            # the column name keeps the default 2020
     h = pd.DataFrame.from_dict(recs, orient="index").rename_axis("pid").reset_index()
     write_csv_atomic(h, path, index=False)
     log.info("step 6: Hansen values for %d points", len(h))
@@ -630,6 +659,8 @@ def main(argv=None) -> int:
                    help="override a PreprocessSettings value from config.py for this run (repeatable)")
     argv = sys.argv[1:] if argv is None else list(argv)
     args = p.parse_args(argv)
+    if args.workers < 1:
+        p.error("--workers must be at least 1")
     if args.index is not None and not args.index.exists():
         p.error(f"--index {args.index} does not exist (leave out --index to build the index in --out)")
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -644,7 +675,7 @@ def main(argv=None) -> int:
         log.warning("interrupted; the finished steps and scenes are kept: run the same command again to resume")
         return 130
     except (requests.RequestException, DownloadError, rasterio_io_error()) as e:
-        log.error("download failed after retries: %s. Nothing incomplete was saved: run the same command again.", e)
+        log.error("download failed after retries: %s. Finished steps are kept: run the same command again.", e)
         return 1
 
 
