@@ -1,0 +1,78 @@
+column,role,reason,auc_mb_train,coverage,mapbiomas_derived
+nc_B_SAG_SON,feature,"SAG level: best MapBiomas AUC (0.88) among both-set, 3-year versions",0.88,both,False
+mm_SAG_OctJan,dropped,rho 0.90 with nc_B_SAG_SON (Meera's SAG Oct–Jan base),0.87,both,False
+nc_B_SAG_DJ,dropped,"rho 0.92 with SAG Oct–Jan and 0.86 with SAG mean (same index, Dec–Jan window)",0.83,both,False
+nc_B_SAG_mean,dropped,rho 0.87 with nc_B_SAG_SON,0.82,both,False
+nc_A_SAG,benchmark,One-season SAG Oct–Jan: Cropin baseline input; rho 0.82–0.90 with kept SAG,0.85,both,False
+r2_sag_oct_nov_mean,dropped,rho 0.87 with nc_B_SAG_SON; MapBiomas only,0.89,MapBiomas only,False
+r2_sag_year_mean,dropped,"Same index (SAG), single year, MapBiomas only; rho 0.86 with SAG mean",0.81,MapBiomas only,False
+nc_B_SAG_phase_sin,feature,SAG seasonal timing; rho < 0.3 with other SAG columns,0.85,both,False
+mm_SAG_win,feature,Meera: SAG in winter; rho < 0.15 with other SAG columns,0.73,both,False
+r2_sag_swing_mean,pending_QC,"SAG seasonal swing: distinct (rho 0.26 with phase), no QC values yet",0.77,MapBiomas only,False
+nc_wi3_NDMI,feature,"Winter NDMI, 3 years (identical to Meera's winter NDMI, rho 1.00)",0.71,both,False
+mm_NDMI_win,dropped,Identical to nc_wi3_NDMI,0.71,both,False
+nc_su3_NDMI,feature,"Summer NDMI, 3 years; rho 0.81 with winter NDMI",0.68,both,False
+nc_A_su_NDMI,dropped,One-season version of nc_su3_NDMI (rho 0.90),0.68,both,False
+r2_ndmi_aug_oct_mean,dropped,"Winter/spring NDMI, single year, MapBiomas only; covered by nc_wi3_NDMI",0.7,MapBiomas only,False
+nc_sg3_NDVI,feature,"Oct–Jan NDVI, 3 years (Lean 4 idea, now 3-year)",0.66,both,False
+nc_A_sg_NDVI,dropped,One-season version of nc_sg3_NDVI,0.67,both,False
+mm_NDVI_win,feature,Meera: winter NDVI; rho 0.60 with Oct–Jan NDVI,0.55,both,False
+r2_ndvi_aug_oct_mean,dropped,"Single year, MapBiomas only, AUC 0.54; covered by winter NDVI",0.54,MapBiomas only,False
+r2_ndvi_p10_jul_nov_mean,dropped,"Single year, MapBiomas only, AUC 0.51",0.51,MapBiomas only,False
+r2_ndvi_year_mean,dropped,"Single year, MapBiomas only, AUC 0.54",0.54,MapBiomas only,False
+mm_B6_win,feature,Meera: winter red edge B6 (filled after GEE batch M1),,both,False
+mm_B8A_win,feature,Meera: winter near-infrared B8A,0.51,both,False
+nc_B_NDRE_phase_sin,feature,Red-edge seasonal timing; rho 0.05 with B8A,0.67,both,False
+nc_B_SWIR_phase_sin,feature,SWIR timing (sine); keep with cosine as a pair,0.67,both,False
+nc_B_SWIR_phase_cos,feature,SWIR timing (cosine),0.7,both,False
+nc_E_eth_h,feature,Canopy height (ETH 2020),0.68,both,False
+r2_height_mean,dropped,"rho 1.00 with nc_E_eth_h: run 2 height is the ETH map, not Meta",0.66,MapBiomas only,False
+nc_chm_mean_r15,benchmark,Meta height: Cropin baseline input; MapBiomas AUC 0.52,0.52,both,False
+nc_E_eth_sd50,feature,"Height variability (ETH, 50 m)",0.67,both,False
+r2_height_stdDev,dropped,"ETH height SD in 15 m: rho 0.75 with nc_E_eth_sd50, same source, MapBiomas only",0.64,MapBiomas only,False
+nc_chm_stdDev_r15,benchmark,Meta height SD: Cropin baseline input; MapBiomas AUC 0.54,0.54,both,False
+nc_F_VHminusVV_median,feature,"Radar cross-ratio, 3 years",0.77,both,False
+nc_F_VH_median,feature,"Radar VH, 3 years; rho -0.18 with cross-ratio",0.67,both,False
+r2_vhvv_mean,dropped,"Cross-ratio, 2021–22, MapBiomas only; rho 0.78 with nc version",0.83,MapBiomas only,False
+r2_vh_mean,dropped,rho 0.98 with nc_F_VH_median,0.68,MapBiomas only,False
+r2_vv_mean,dropped,rho 0.95 with nc_F_VH_median,0.76,MapBiomas only,False
+hc_s_std,feature,NBR variability 1985–2020 (chosen after first results),0.97,both (border points missing),False
+hc_s_min,dropped,rho -0.93 with hc_s_std,0.94,both (border points missing),False
+hc_s_max_drop3,dropped,rho 0.86 with hc_s_std,0.92,both (border points missing),False
+nc_D_max_nbr_drop,feature,"Largest NBR drop, 25 years to as-of; rho 0.62 with hc_s_std",0.88,both,False
+nc_D_cc_n_breaks,feature,CCDC breaks; rho <= 0.56 with others,0.88,both,False
+hc_s_frac_below_forest,feature,Share of years below closed canopy; rho 0.83 with hc_s_std,0.86,both (border points missing),False
+hc_max_drop,feature,Largest cut (segmented); rho 0.68 with hc_s_std,0.86,both (border points missing),False
+hc_years_since_last_cut,dropped,rho -0.99 with hc_max_drop,0.86,both (border points missing),False
+hc_n_cuts,dropped,rho 0.98 with hc_max_drop,0.85,both (border points missing),False
+hc_n_cycles,dropped,rho 0.96 with hc_max_drop,0.83,both (border points missing),False
+nc_D_years_continuous_forest,feature,Years of continuous forest; rho <= 0.62 with others,0.85,both,False
+hc_forest_since_1985,veto,"rho -0.85 with hc_s_frac_below_forest, kept as a forest-protection rule (not a model input)",0.72,both (border points missing),False
+hc_abrupt_start,feature,Planting on open land; rho <= 0.62 with others,0.71,both (border points missing),False
+nc_D_lt_n_vertices,feature,LandTrendr vertices; rho <= 0.36 with others,0.71,both,False
+nc_D_ndvi_1985_89,feature,NDVI 1985–89; rho <= 0.64 with others,0.7,both,False
+hc_regrow_speed,dropped,Teammate finding: poor predictor (regrowth equally fast in both classes),0.8,both (border points missing),False
+hc_has_cut,dropped,Thresholded copy of cut count,0.83,both (border points missing),False
+hc_has_cycle,dropped,Thresholded copy of cycle count,0.81,both (border points missing),False
+hc_two_plus_cycles,dropped,Thresholded copy of cycle count,0.7,both (border points missing),False
+hc_n_years,dropped,"Data-availability count, not a feature (AUC 0.51)",0.51,both (border points missing),False
+hc_tc2000,feature,Hansen tree cover 2000,0.79,both (border points missing),False
+nc_D_h_total_loss_px,feature,"Hansen loss within 150 m, to as-of year",0.79,both,False
+hc_hansen_loss,dropped,"Same source and idea as nc_D_h_total_loss_px (pixel only, to 2020; lower AUC)",0.75,both (border points missing),False
+hc_hansen_gain,feature,Hansen gain 2000–2012; rho <= 0.47 with others,0.76,both (border points missing),False
+nc_nfw,feature,Natural Forests of the World 2020,0.96,both,False
+nc_H_mapbiomas10m_plantation,feature,"MAPBIOMAS-DERIVED: 10 m map says plantation (allowed, report with and without)",0.89,both,True
+r2_ever_farm_mean,pending_QC,MAPBIOMAS-DERIVED farmland history; no QC values yet,0.68,MapBiomas only,True
+r2_farm_years_mean,dropped,rho 0.99 with r2_ever_farm_mean,0.68,MapBiomas only,True
+r2_ever_farm_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.5,MapBiomas only,False
+r2_farm_years_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.59,MapBiomas only,False
+r2_ndmi_aug_oct_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.58,MapBiomas only,False
+r2_ndvi_aug_oct_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.56,MapBiomas only,False
+r2_ndvi_p10_jul_nov_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.52,MapBiomas only,False
+r2_ndvi_year_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.52,MapBiomas only,False
+r2_sag_oct_nov_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.69,MapBiomas only,False
+r2_sag_swing_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.69,MapBiomas only,False
+r2_sag_year_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.73,MapBiomas only,False
+r2_vh_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.55,MapBiomas only,False
+r2_vhvv_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.6,MapBiomas only,False
+r2_vv_stdDev,dropped,"Within-buffer SD from the run 2 table: not in run 2's own model, MapBiomas only",0.57,MapBiomas only,False
