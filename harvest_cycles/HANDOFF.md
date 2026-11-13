@@ -23,7 +23,7 @@ the project lead and an AI coding assistant (Claude Code), so that others can co
 | Data | What | Where | Rule |
 |---|---|---|---|
 | MapBiomas validation points | 1,831 points of the team's table (`data_exploration/cropin_model_features_2022.csv`), 429 plantation / 1,402 natural forest (2022 reference class); public | `public_data/harvest_cycles/points.csv` (pid `V…`) | Labels are public |
-| Cropin QC polygons | 433 hand-checked cases: 310 plantation harvests flagged as deforestation (false alarms), 123 real forest clearings | GeoJSON in `CROPIN-MIT-DATA/cropin_qc_data/` (git-ignored) | **Labels are confidential: never commit them, never output per-polygon values.** Locations are *not* confidential (confirmed by the project lead). |
+| Cropin QC polygons | 433 hand-checked cases: 310 plantation harvests flagged as deforestation (false alarms), 123 real forest clearings | GeoJSON in `CROPIN-MIT-DATA/cropin_qc_data/` (git-ignored) | **Labels are confidential: never commit them, nor any per-polygon result derived from them (only totals and rates).** Locations, and satellite values at those locations, are *not* confidential (confirmed by the project lead). |
 | Derived public data | Yearly Landsat series, Hansen values, MapBiomas class history, Meta canopy height at all 2,264 points; QC label column left empty | `public_data/harvest_cycles/` | Safe to commit |
 
 - The repository is **public**. `CROPIN-MIT-DATA/` is git-ignored; raw downloads and anything with QC labels stay there.
@@ -48,7 +48,9 @@ the project lead and an AI coding assistant (Claude Code), so that others can co
   closed canopy within 5 years; *forest since 1985* = no cut and never below closed canopy.
 - **Feature sets:** H4 = n_cycles, regrow_speed, forest_since_1985, abrupt_start. H-all = H4 + n_cuts,
   years_since_last_cut, max_drop, s_frac_below_forest, s_min, s_max_drop3. Variability = s_std (picked after first
-  results: treat as needing confirmation). Yes/no: has_cut, has_cycle, two_plus_cycles, fast_regrowth.
+  results: treat as needing confirmation). Yes/no: has_cut, has_cycle, two_plus_cycles, fast_regrowth. Seasonal
+  (feature script only, not in the notebook): season_diff_{nbr,ndvi}_{1985_2020,2013_2020}, wet- minus dry-season
+  median; also picked after looking at results.
 - **Evaluation:** train on MapBiomas points only; spatial cross-validation (GroupKFold by municipality, 5 folds × 5
   repeats); operating threshold = flag ≤ 5% of natural forest; Cropin QC used **only as an independent test**.
   P-values clustered by municipality (MapBiomas) or 0.1° cell (QC); AUC intervals by resampling those clusters.
@@ -96,10 +98,10 @@ All in `harvest_cycles/harvest_cycles_findings.ipynb` unless marked *(session an
   Team's SAG alone 0.870 / 0.862 AUC and catches 45% of plantations; **SAG + H-all 0.968 / 0.966, catches 87%**,
   all 25 folds better; finds 192 of the 237 plantations SAG misses (SAG values are 2022 imagery: not EUDR-pure).
 - *(session analysis)* **Seasonality ("winter drop")**: wet-minus-dry season difference from the dated observations;
-  natural forest is more seasonal. NBR 2013–2020 version: AUC 0.83 MapBiomas / 0.70 QC (robust within each state and to
+  natural forest is more seasonal. NBR 2013–2020 version: AUC 0.82 MapBiomas / 0.70 QC (robust within each state and to
   a latitude trend); the pre-specified NDVI all-years version is weak (0.69 / 0.59). Adding the four seasonal versions
   to H-all: +0.04–0.05 AUC on QC (CI excludes 0), +0.01 on MapBiomas; +0.008 (n.s.) on top of the 36 yearly values.
-  Picked after looking: needs confirmation. These four features are now in the feature script (section 7).
+  Picked after looking: needs confirmation. These four features are in the feature script and the public features table, not in the notebook.
 - *(session analysis)* **Training on 70% of QC + MapBiomas, testing on the other 30%** (20 grouped splits): no gain
   (≤ +0.01 AUC); training on QC alone does about as well; one split alone is very noisy (0.68–0.85 for one model).
   Decision: keep training on MapBiomas and testing on QC.
@@ -127,15 +129,19 @@ plantations established 2014–2020 (cut seen in 44%); adding QC cases to traini
 - **Feature pipeline (Nov 2026):** two scripts (preprocessing; features), thresholds in `config.py` with command-line
   overrides recorded next to every output, notebook imports the feature code (single source of truth), MapBiomas label
   in the features CSV as `label_mapbiomas`, raw downloads git-ignored, our 2,264 points first. Unit tests and pinned
-  dependencies deliberately skipped for now. Thresholds are *inputs*, not many feature variants; tune later with
+  dependencies deliberately skipped for now. After review: labels on QC points are refused in code; scenes that cannot
+  be read are left out and listed when under 1% of the scenes (else the run stops); new runs use the sensor offsets and
+  NBR levels of the analysis points unless asked otherwise, so features stay comparable with the trained models. Thresholds are *inputs*, not many feature variants; tune later with
   nested cross-validation (tuning on MapBiomas risks fitting its labels).
 
 ## 6. Before production (to do)
 
 - **Move the pipeline to Google Earth Engine with Landsat Collection 2.** Collection 1 (used here) is deprecated by USGS;
   Google's bucket still serves it but may stop. Collection 2 needs re-validating every feature and threshold (NBR
-  levels, harmonisation offsets). `harvest_cycles/gee/landtrendr_harvest_features.js` (on the analysis branch) already
-  computes the features with real LandTrendr on Collection 2.
+  levels, harmonisation offsets). A starting point: `harvest_cycles/gee/landtrendr_harvest_features.js` on the analysis
+  branch runs real LandTrendr on Collection 2 but computes only 6 of the 19 features (n_cuts, n_cycles, last_cut_year,
+  max_drop, forest_since_1985, abrupt_start), with placeholder NBR levels (0.70 / 0.55) to recalibrate, and its
+  offline adapter `scripts/features_from_gee_export.py` was not ported.
 - Tune thresholds with nested spatial cross-validation; confirm variability and the seasonal features on new data.
 - Get Cropin's exact forest layer and SAG score: run `harvest_cycles/gee/cropin_layers_at_points.js` in Earth Engine and
   save its two CSVs in `public_data/harvest_cycles/`; the notebook's section 8 then uses them (rewrite its text).
@@ -146,28 +152,42 @@ plantations established 2014–2020 (cut seen in 44%); adding QC cases to traini
 |---|---|
 | `main` | `harvest_cycles/harvest_cycles_findings.ipynb` + `public_data/harvest_cycles/` (merged via PRs #3 and #4); team folders; `Google Earth Engine Base/` (Cropin's forest-layer and SAG scripts) |
 | branch `claude/harvest-findings-notebook` | Latest notebook: section 8 (Cropin forest layer / SAG), `harvest_cycles/gee/cropin_layers_at_points.js`, `public_data/harvest_cycles/canopy_height.csv`, this file, and the feature pipeline below. **Not merged yet.** |
-| branch `claude/friendly-cori-fvrwiz` | Original full pipeline: `harvest_cycles/scripts/` (index → points → scenes → extraction → Hansen → series → features → analysis), `results/`, `figures/`, `docs/summary.md`, `gee/landtrendr_harvest_features.js`. Superseded by the new scripts once they are verified; not merged. |
-| `harvest_cycles/config.py` *(being added)* | All thresholds and settings (defaults reproduce the analysis) |
-| `harvest_cycles/build_harvest_cycles_features.py` *(being added)* | Yearly series + dated observations → features CSV (19 features + `label_mapbiomas`); also imported by the notebook |
-| `harvest_cycles/preprocess_landsat.py` *(being added)* | Points CSV (pid, lon, lat) → Landsat scenes → clean dated observations → yearly series (resumable; raw cache git-ignored) |
+| branch `claude/friendly-cori-fvrwiz` | Original full pipeline: `harvest_cycles/scripts/` (index → points → scenes → extraction → Hansen → series → features → analysis), `results/`, `figures/`, `docs/summary.md`, `gee/landtrendr_harvest_features.js`. Superseded by the new scripts; not merged. |
+| `harvest_cycles/config.py` | All thresholds and settings (defaults reproduce the analysis); checked when overridden |
+| `harvest_cycles/preprocess_landsat.py` | Points CSV (pid, lon, lat) → Landsat scenes → clean dated observations → yearly series (resumable; raw cache git-ignored) |
+| `harvest_cycles/build_harvest_cycles_features.py` | Yearly series + dated observations → features CSV (19 features + `label_mapbiomas`); also imported by the notebook |
+| `harvest_cycles/README.md` | How to run the two scripts on new points; feature dictionary; settings; "Before production" |
+| `public_data/harvest_cycles/harvest_cycles_features.csv` | The features of the 2,264 analysis points, with its `.settings.json` run record |
+
+The analysis branch's `harvest_cycles/scripts/` is superseded by the two scripts above (they reproduce it exactly).
 
 Outside the repository (owned by the project lead): an HTML explainer page and a 13-slide deck (private claude.ai
 artifacts), and .pptx slides for the 12 Nov findings meeting.
 
 ## 8. Status (13 Nov 2026)
 
-- Done and pushed: notebook sections 1–10 (reproduces the original pipeline exactly: 424 automated checks against the
-  committed results); section 8 (stand-ins for Cropin's layers); Earth Engine export for the exact layers; canopy height.
-- **In progress on `claude/harvest-findings-notebook`:**
-  - `config.py`, `build_harvest_cycles_features.py`: written; the features match the notebook's exactly (max difference
-    0.0 on all 15 series features; the 4 seasonal features identical to the session analysis).
-  - `preprocess_landsat.py`: being ported from the analysis branch's `scripts/` (steps 1–6 + optional Hansen sampling).
-  - Notebook refactor to import the feature module; README with run instructions and the production note.
-  - Planned verification: re-run the notebook (424 checks), run preprocessing end to end on the 2,264 points and compare
-    with the existing series, independent review.
-- Next ideas: combine harvest history with the team's height / Natural Forests / land-history features; QC reporting
-  with blocked intervals and by pixel coverage; check QC labels against independent maps; ask Cropin the open questions
-  (main use, holdout selection, an "unsure" label, SAG/CCDC settings).
+- **Done and pushed on `claude/harvest-findings-notebook` (not merged into `main` yet):**
+  - Notebook sections 1–10, section 8 (stand-ins for Cropin's layers), the Earth Engine export for the exact layers,
+    canopy height.
+  - Feature pipeline: `config.py`, `preprocess_landsat.py`, `build_harvest_cycles_features.py`, README; the notebook
+    imports the feature module; `public_data/harvest_cycles/harvest_cycles_features.csv` made with the committed code.
+- **How it was verified:**
+  - Preprocessing re-run end to end on the 2,264 points reproduced the original pipeline exactly: same path/rows, same
+    26,914 candidate and 8,063 selected scenes, identical series, offsets, 461,872 clear observations and Hansen values.
+  - The feature module reproduces the notebook's features exactly; the 4 seasonal features match the session analysis.
+  - The notebook was re-executed after the refactor and passed 424 automated checks against the original pipeline's
+    results. Those checks and the notebook builder lived in the assistant's scratch space, **not in the repository**:
+    edit the `.ipynb` directly from now on, and re-check numbers you change against the cell outputs.
+  - An independent review (several reviewers plus adversarial verification) ran the scripts on 12 new points and
+    tested edge cases. Every confirmed problem was fixed: numeric point ids, empty or partly missing batches, points
+    outside Landsat coverage, unreadable scenes blocking re-runs, Ctrl+C, network errors, `--set` checks, label checks
+    (labels on QC points are refused), calibration on small batches, reproducible gzip outputs and run records with the
+    command line. Left as is (documented in the README): memory of step 5 for very large batches, the generic module
+    name `config`, column names that keep their default settings.
+- **Next:** merge the branch (ask the lead); combine harvest history with the team's height / Natural Forests /
+  land-history features; QC reporting with blocked intervals and by pixel coverage; check QC labels against
+  independent maps; ask Cropin the open questions (main use, holdout selection, an "unsure" label, SAG/CCDC settings);
+  before production, see section 6.
 
 ## 9. Working conventions
 
