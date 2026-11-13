@@ -1,1 +1,24 @@
 CROPIN-MIT-DATA/
+# ---- Local-only folders and files ----
+_handoff/
+CLAUDE.local.md
+.venv/
+
+# ---- Sponsor (Cropin) data: the repo is PUBLIC, so data stays local ----
+# Each data folder keeps only its README.md in git. See data/README.md.
+data/raw/mapbiomas_validation/*
+!data/raw/mapbiomas_validation/README.md
+data/raw/cropin_qc/*
+!data/raw/cropin_qc/README.md
+data/gee_assets/*
+!data/gee_assets/README.md
+data/gee_exports/*
+!data/gee_exports/README.md
+data/processed/*
+!data/processed/README.md
+
+# ---- Python / Jupyter / OS ----
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+.DS_Store
