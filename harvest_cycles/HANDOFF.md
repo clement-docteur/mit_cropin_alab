@@ -161,8 +161,9 @@ plantations established 2014–2020 (cut seen in 44%); adding QC cases to traini
 
 The analysis branch's `harvest_cycles/scripts/` is superseded by the two scripts above (they reproduce it exactly).
 
-Outside the repository (owned by the project lead): an HTML explainer page and a 13-slide deck (private claude.ai
-artifacts), and .pptx slides for the 12 Nov findings meeting.
+Outside the repository (owned by the project lead): an HTML explainer page of the findings, a 13-slide deck, a
+one-page summary of the feature pipeline (all private claude.ai artifacts), and .pptx slides for the 12 Nov findings
+meeting.
 
 ## 8. Status (13 Nov 2026)
 
@@ -184,7 +185,16 @@ artifacts), and .pptx slides for the 12 Nov findings meeting.
     (labels on QC points are refused), calibration on small batches, reproducible gzip outputs and run records with the
     command line. Left as is (documented in the README): memory of step 5 for very large batches, the generic module
     name `config`, column names that keep their default settings.
-- **Next:** merge the branch (ask the lead); combine harvest history with the team's height / Natural Forests /
+  - The fixes themselves were reviewed (no regressions; small follow-ups fixed), then a final fresh review of the
+    pushed code found 7 more issues, all fixed in commit `c1a6aa5`: Hansen 3×3 neighbours across a 10° tile edge were
+    read as 0 (now read from the next tile; no effect on the 2,264 points, the original pipeline had the same bug);
+    `slc_off_date`, the offset years and `--workers` are now checked before a run; a rerun removes the old run record
+    and series files the new settings do not write; README's `abrupt_start` definition now matches the code.
+  - After all fixes, the features table and the Hansen values of the 2,264 points are byte-identical to before, and a
+    rerun of the 12-new-point example gives identical outputs.
+- **Commits on the branch for this work:** `fcc19fb` (this file), `1b308f1` (pipeline, notebook refactor, docs),
+  `236e5fe` (features table), `c1a6aa5` (final-review fixes).
+- **Next:** merge the branch into `main` (ask the lead; no pull request opened yet); combine harvest history with the team's height / Natural Forests /
   land-history features; QC reporting with blocked intervals and by pixel coverage; check QC labels against
   independent maps; ask Cropin the open questions (main use, holdout selection, an "unsure" label, SAG/CCDC settings);
   before production, see section 6.
