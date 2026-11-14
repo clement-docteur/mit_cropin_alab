@@ -46,6 +46,22 @@
 4. **MapBiomas-derived features help forest safety at the alerts but cost recall.** Without them, B5 cleared 68% of plantation alerts but made 5 forest errors instead of 2. On MapBiomas points these features are circular, so their 0.99 scores there mean little.
 5. **Ideas that didn't work in our rebuild:** using "forest every year since 1985" as a veto (more forest errors, not fewer), and the MapBiomas 10 m map as a feature in logistic regression.
 
+## Follow-up: Cropin's SAG + a few features (development half only)
+
+Run after the held-back test, so the QC numbers below are development-half only and not confirmed. Rule fixed before running: start from Cropin's SAG (one season, Oct–Jan) and add one feature at a time, choosing the one that most raises cross-validated AUC on MapBiomas training points; stop after 5 additions or when the gain is < 0.005. QC alerts were used only for reporting.
+
+| Step | Added | MapBiomas AUC | QC AUC | QC forest errors | QC recall |
+|---|---|---|---|---|---|
+| 0 | Cropin's SAG alone | 0.84 | 0.79 | 10/58 | 63% |
+| 1 | + NBR variability (harvest-cycle idea) | 0.97 | 0.82 | 14/58 | 66% |
+| 2 | + Natural Forests of the World | 0.98 | 0.83 | 10/58 | 62% |
+| 3 | + Hansen forest loss within 150 m | 0.99 | 0.83 | 11/58 | 67% |
+
+- The same features were picked in every cross-validation fold (nested MapBiomas AUC 0.985). No MapBiomas-derived feature was picked.
+- **Big gain on MapBiomas points, small gain at the alerts, and no fewer forest errors.** Selection on MapBiomas points favours history features, which transfer poorly to Cropin's alerts.
+- At the alerts, SAG + 3 (AUC 0.83) sits below I2 (0.85), I1 (0.87), B5 (0.87), and Phase 7's Lean 4 (0.85), which builds on SAG with seasonal spectral features instead of history.
+- Building on SAG properly would mean choosing additions on alerts, which needs more labelled alerts from Cropin.
+
 ## Caveats
 
 - The held-back half was already seen during teammates' feature screening, so expect somewhat lower numbers on fresh alerts. **Cropin's blind holdout is the clean test.**
