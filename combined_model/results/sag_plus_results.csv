@@ -1,0 +1,9 @@
+variant,step,added,MB CV AUC,MB recall @5%,QC AUC,QC forest errors,QC recall,QC recall @3/58 errors
+all features,0,Cropin SAG alone,0.843,0.469,0.788,10/58,0.631,0.336
+all features,1,rh_s_std,0.97,0.893,0.824,14/58,0.664,0.423
+all features,2,nc_nfw,0.982,0.925,0.831,10/58,0.617,0.315
+all features,3,nc_D_h_total_loss_px,0.988,0.952,0.831,11/58,0.671,0.369
+without MapBiomas-derived,0,Cropin SAG alone,0.843,0.469,0.788,10/58,0.631,0.336
+without MapBiomas-derived,1,rh_s_std,0.97,0.893,0.824,14/58,0.664,0.423
+without MapBiomas-derived,2,nc_nfw,0.982,0.925,0.831,10/58,0.617,0.315
+without MapBiomas-derived,3,nc_D_h_total_loss_px,0.988,0.952,0.831,11/58,0.671,0.369
