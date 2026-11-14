@@ -1,7 +1,8 @@
 # Harvest-cycle inputs (public data)
 
-Inputs for `harvest_cycles/harvest_cycles_findings.ipynb`, extracted once from public satellite archives at the
-team's 1,831 MapBiomas validation points and at the 433 Cropin QC clearings.
+Inputs for `harvest_cycles/harvest_cycles_findings.ipynb` and the harvest-cycle features, extracted once from public
+satellite archives at the team's 1,831 MapBiomas validation points and at the 433 Cropin QC clearings. The yearly
+series can be rebuilt with `harvest_cycles/preprocess_landsat.py` (same values).
 
 | File | Contents |
 |---|---|
@@ -10,6 +11,8 @@ team's 1,831 MapBiomas validation points and at the 433 Cropin QC clearings.
 | `series_nbr_dry_median.csv.gz`, `series_nbr_wet_median.csv.gz`, `series_nbr_max.csv.gz` | The same with a dry-season (Apr–Sep) median, a wet-season (Oct–Mar) median, or the yearly maximum |
 | `series_ndvi_median.csv.gz` | Yearly NDVI per point (median), for comparison |
 | `hansen_gfc.csv` | Hansen Global Forest Change v1.12 at each point: tree cover 2000, gain 2000–2012, loss year, and the number of 3×3 neighbours with a loss up to 2020 |
+| `harvest_cycles_features.csv` | The 19 harvest-cycle features of every point (described in `harvest_cycles/README.md`), with `label_mapbiomas` (MapBiomas class; empty for the Cropin QC points). Made by `harvest_cycles/build_harvest_cycles_features.py` (see below); `harvest_cycles_features.csv.settings.json` records the command line, settings, input checksums and code version. |
+| `canopy_height.csv` | Meta / WRI global canopy height v1 (about 1 m; at these points imagery from 2010–2019, three quarters 2018–2019) at each point: mean over an 11 × 11-pixel window, about 12 m × 12 m (`chm_mean`), and the centre pixel (`chm_centre`), in metres |
 | `val_label_history.csv` | MapBiomas reference class per year, 1985–2022, at the MapBiomas points (3 = forest, 9 = plantation) |
 
 ## How they were made
@@ -23,3 +26,26 @@ team's 1,831 MapBiomas validation points and at the 433 Cropin QC clearings.
 - **MapBiomas:** the MapBiomas validation points (`mapbiomas_85k_points_validation`), restricted to the rows of the
   team's `data_exploration/cropin_model_features_2022.csv`.
 - Only imagery up to 31 December 2020 is used (EUDR cutoff).
+- **Canopy height:** tiles of `forests/v1/alsgedi_global_v6_float/chm/` on the public `dataforgood-fb-data` bucket
+  (the dataset Cropin's forest layer uses through Earth Engine).
+
+## Rebuilding the features table
+The 15 series features need only the files here. The 4 seasonal features also need the dated observations
+(`observations.csv.gz`, 13 MB), which are not in the repository: `preprocess_landsat.py` writes them (about 25 minutes).
+From the repository root:
+
+```bash
+python harvest_cycles/preprocess_landsat.py --points public_data/harvest_cycles/points.csv \
+    --out CROPIN-MIT-DATA/harvest_cycles_v2 --workers 64
+python harvest_cycles/build_harvest_cycles_features.py --data CROPIN-MIT-DATA/harvest_cycles_v2 \
+    --points public_data/harvest_cycles/points.csv --label-column label \
+    --out public_data/harvest_cycles/harvest_cycles_features.csv
+```
+
+Without the observations, `--data public_data/harvest_cycles --no-seasonal` gives the other 15 features exactly. Use
+this `points.csv` only: its QC labels are empty, and the script refuses labels on QC points.
+
+## Optional: Cropin's exact layers
+`harvest_cycles/gee/cropin_layers_at_points.js` (Earth Engine) writes `cropin_forest_layer.csv` (the parts of Cropin's
+forest layer at each point) and `cropin_sag_observations.csv` (every SAG value at each point, Oct–Jan 2019–2025).
+Saved here, they replace the stand-ins in section 8 of the notebook. Neither holds Cropin's labels.
