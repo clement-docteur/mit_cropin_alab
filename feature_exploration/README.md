@@ -9,7 +9,9 @@ Nathan Chu (with Claude), November 2026. This folder contains the method, the re
 | Path | What it is |
 |---|---|
 | `docs/00 Workflow Plan.md` | The method: validity rules, decision rule, phases |
-| `docs/Feature Exploration - Summary of Findings.md` | One-document summary of Phases 0–5 |
+| `docs/Feature Exploration - Summary of Findings.md` | One-document summary of Phases 0–7, including the final test |
+| `docs/Phase 7 Protocol.md` | The final test, locked before the sealed data were opened |
+| `docs/Canopy Height and Wetness - Team Summary.md` | Team-facing summary of the canopy height and wetness (canopy moisture) hypotheses: reasoning, method, problems, and results |
 | `docs/Wave 1 Report.md`, `Wave 2 Report.md`, `Wave 3 Report.md` | Detailed results by feature family |
 | `docs/Run Log.md` | Every run, decision, fix, and independent review, in order |
 | `scripts/` | All analysis code (Python) and Google Earth Engine templates (JavaScript) |
@@ -25,6 +27,9 @@ Nathan Chu (with Claude), November 2026. This folder contains the method, the re
 | Wave 3: structure (E), terrain/context (G), public maps (H) | `w3_*`, `w3b_*` (GEDI re-export) |
 | Phase 4: combine families | `p4_combine.py`, `p4_lean.py` |
 | Phase 5: robustness | `p5_year_features.py`, `p5_robust.py` |
+| Phase 6: error breakdown | `p6_errors.py` |
+| Phase 7: final sealed test | `p7_make_gee_script.py` + `p7_alphaearth_template.js` (AlphaEarth benchmark), `p7_final.py` |
+| Post-hoc (after Phase 7): winter NDMI | `p8_winter_ndmi.py`, `p8_common.py`. Pre-registered in the Run Log before running, but **post-hoc**: it re-used the already-opened sealed sets, so it is not an independent test |
 
 ## How the pipeline runs
 
@@ -38,7 +43,7 @@ File paths in the scripts point to where they were run (a local folder and a clo
 
 - **Data files.** The MapBiomas validation points, Cropin's QC polygons, GEE exports, and feature/result tables are not here. They can be regenerated from the scripts and the source data.
 - **Generated GEE scripts** (`*_gee.js`). They embed point coordinates and labels, including Cropin's QC data. Only the templates are included.
-- **The sealed test sets.** A 20% MapBiomas "lockbox" and half of Cropin's QC points are kept unopened for the single final test (Phase 7). Scripts that create them write files named `*DO_NOT_OPEN*`. **Please don't open or use those files**, or the final test is no longer independent.
+- **The sealed test sets.** A 20% MapBiomas "lockbox" and half of Cropin's QC points were kept unopened until the single final test (Phase 7, 11 Nov 2026). They have now been used once, so any new result on them is no longer an independent test. The files are named `*DO_NOT_OPEN*`.
 
 ## Key definitions
 

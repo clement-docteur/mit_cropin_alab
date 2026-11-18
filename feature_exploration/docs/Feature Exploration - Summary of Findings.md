@@ -1,17 +1,18 @@
-# Feature Exploration – Summary of Findings (Phases 0–5)
+# Feature Exploration – Summary of Findings (Phases 0–7, final)
 
-*Prepared by Nathan Chu (with Claude) · 8 November 2026 · Analyses are our own (Google Earth Engine + Python) unless a source is given · **[inference]** = our interpretation, not tested · Detailed evidence: `Wave 1 Report`, `Wave 2 Report`, `Wave 3 Report`, `Run Log.md`, and `results/` in the `Feature Exploration` folder · Method: `00 Workflow Plan.md`*
+*Prepared by Nathan Chu (with Claude) · 11 November 2026 (updated after the final test) · Analyses are our own (Google Earth Engine + Python) unless a source is given · **[inference]** = our interpretation, not tested · Detailed evidence: `Wave 1 Report`, `Wave 2 Report`, `Wave 3 Report`, `Phase 7 Protocol`, `Run Log.md`, and `results/` in the `Feature Exploration` folder · Method: `00 Workflow Plan.md`*
 
 ---
 
 ## 1. Summary
 
-1. **Four simple features beat the baseline clearly.** They are Cropin's SAG colour signal measured in spring, the timing of the yearly colour cycle, summer canopy moisture, and late-spring greenness. On Cropin's QC points they lower forest error from about 17% to about 7% at the same plantation recall (QC AUC 0.78 → 0.85). On MapBiomas points they nearly double plantation recall at 5% forest error (42% → 72%).
-2. **Cropin's SAG works better in spring.** SAG measured over September–November separates plantations from natural forest better than the December–January window Cropin uses (AUC 0.88 vs 0.83 on MapBiomas points; equal on Cropin's points).
-3. **Most features that look strong on MapBiomas points do not carry over to Cropin's alerts.** This is true of land history, texture, and the public maps. The public maps (MapBiomas, JRC forest types, NFW) miss most of the plantations at Cropin's alerts.
-4. **Land-history features are dangerous on their own.** They call 47% of disturbed-and-regrown natural forest "plantation", which is the case Cropin warned about.
-5. **The models rank stands consistently across states, years, and cloud levels, but the decision threshold drifts in unusual years.** The final layer should use multi-year (3-year) windows.
+1. **On MapBiomas-like data, four simple features clearly beat the baseline, and this held up in the final sealed test.** The features are Cropin's SAG colour signal measured in spring, the timing of the yearly colour cycle, summer canopy moisture, and late-spring greenness. On the sealed MapBiomas lockbox, AUC rose from 0.84 to 0.92 (significant), and plantation recall from 36% to 67% at about 5% forest error.
+2. **At Cropin's alerts, the gain is small and not proven.** On the sealed half of Cropin's QC points (59 forest, 148 plantation), AUC rose only from 0.81 to 0.83 (not significant), with 3 vs 2 forest errors. The larger gain we saw on QC development points (0.78 → 0.85) did not replicate. It was partly small-sample noise and partly optimism from choices that used those points.
+3. **Public maps and AlphaEarth are not safe at Cropin's alerts.** They look strong on MapBiomas points but, at the alerts, either miss most plantations (MapBiomas map 17%, JRC forest types 7%) or call too much forest "plantation" (AlphaEarth 15%; NFW 14–39% depending on threshold). **No NFW threshold is safe at alerts in our region.**
+4. **Cropin's SAG works better in spring.** SAG measured over September–November separates plantations from natural forest better than the December–January window Cropin uses on MapBiomas points (AUC 0.88 vs 0.83), and is equal at Cropin's points.
+5. **Land-history features are dangerous on their own.** They call 47% of disturbed-and-regrown natural forest "plantation", which is the case Cropin warned about. Forest edges and younger forest are the other weak spots for every model.
 6. **Of the 43 numbered hypotheses:** 10 are supported (most only on MapBiomas points), 11 are not supported, 7 are weak, 1 is context-dependent, 9 could not be tested with our data and access, 4 are not yet tested, and 1 (H17) is descriptive.
+7. **The main open question is what makes Cropin's alerts different.** Plantations at Cropin's alerts look more like natural forest than MapBiomas plantations do. Answering this needs more labelled alerts, especially forest ones, from Cropin.
 
 Throughout, **"forest error" means real forest called plantation**. That is our dangerous error, not Cropin's "false positive" (a plantation harvest flagged as deforestation). **Cropin has no labels for forest it misses**, so no number in this document shows the overall forest error.
 
@@ -29,9 +30,9 @@ Throughout, **"forest error" means real forest called plantation**. That is our 
 | Set | What it is | Size | Use |
 |---|---|---|---|
 | MapBiomas validation points ([MapBiomas](https://brasil.mapbiomas.org/en/?p=951)) | Points labelled yearly by 3 interpreters. We kept points labelled forest (class 3) or plantation (class 9) in **every** year 2013–2022 | 1,817 dev points (1,406 forest, 411 plantation); 1,753 after removing points without tree cover | Training and cross-validation |
-| MapBiomas **lockbox** | 20% of 0.5° blocks, chosen at random by state | 436 points | **Sealed** until the final test |
+| MapBiomas **lockbox** | 20% of 0.5° blocks, chosen at random by state | 436 points (427 after the tree filter: 332 forest, 95 plantation) | Sealed until the final test; used once in Phase 7 |
 | Cropin QC points | Small areas at recent clearings, labelled forest or plantation by Cropin from historical Google Earth imagery | 415 after removing near-duplicates; dev half 207 (58 forest, 149 plantation) | Checking that results carry over to real alerts. **Never used for training** |
-| QC **held-back half** | The other half, split by 0.25° blocks | 208 (59 forest, 149 plantation) | **Sealed** until the final test |
+| QC **held-back half** | The other half, split by 0.25° blocks | 208; 207 usable (59 forest, 148 plantation), since one point was cleared in 2022 with no earlier Sentinel-2 season | Sealed until the final test; used once in Phase 7 |
 
 **Clearing dates:** Cropin's QC file has no clearing dates, so we estimated them from monthly Sentinel-2 greenness. 91% of the clearings fall in April–September 2026.
 
@@ -170,9 +171,9 @@ Two effects probably combine:
 | M1–M6 (where MapBiomas fails) | Phase 6 |
 | H15 canopy gaps, H33 internal roads | Not tested separately |
 
-## 6. Models: how much the features improve results
+## 6. Models on development data
 
-Dev data; the final, independent test is still to come (Phase 7).
+Development data. The final, independent test is in §8. Its Cropin-point results are weaker than these.
 
 | Model | MapBiomas AUC | MapBiomas plantation recall at 5% forest error | QC AUC [95% CI] | QC forest error at the MapBiomas threshold | QC recall |
 |---|---|---|---|---|---|
@@ -231,29 +232,76 @@ Land history was therefore **left out of the final candidates**. **[inference]**
 - **Not stable:** the threshold. It shifts in very wet years (2024 rainfall was 111% of normal) and when set on a small region.
 - **[inference]** The layer should use 3-year windows, and thresholds should be set on the whole region and re-checked each year.
 
-## 8. Limits
+### 7.3 Error breakdown (Phase 6, development data)
 
-- **Small, biased QC sample.** 58 forest points in 30 blocks. A forest error of 4/58 has a 95% CI of about 3–17%. QC forest is only forest where Cropin already detected a clearing, and **Cropin has no labels for forest it misses**.
-- **QC dev is no longer fully independent.** It informed several choices (flags, alert-like weights, model comparison). The sealed QC half and the MapBiomas lockbox are the independent test.
+| Group (MapBiomas dev) | n forest | Baseline | Lean 4 | P4 |
+|---|---|---|---|---|
+| Within 10 m of non-tree land (edges) | 41 | 14.6% | **22.0%** | 17.1% |
+| More than 100 m from non-tree land | 682 | 3.4% | 3.7% | 4.0% |
+| Younger forest (forest only since 1986–2012; HC2) | 123 | 8.1% | 8.9% | 7.3% |
+| Only 2 of 3 interpreters agree | 281 | 9.6% | 9.6% | 11.0% |
+| Santa Catarina | 432 | 6.7% | 6.0% | 7.4% |
+
+- **Error clusters** sit in the highlands (Serra Catarinense, RS highlands, SC midwest) and on the coast (Paraná coast, SC north coast). **[inference]** These are araucaria/pine country and dense coastal rainforest.
+- **Where the MapBiomas map misses Cropin's plantations (Task 1.5):** in areas where the 10 m map shows no plantation class, it catches 0 of 30 QC plantations, against 24% elsewhere (M3).
+
+## 8. Final test (Phase 7)
+
+The model, thresholds, test sets, and comparisons were locked in `Phase 7 Protocol` before the sealed data were opened, and the data were opened once. Lean 4 was the declared main model and P4 the declared challenger. An independent reviewer reproduced every number.
+
+| Model | QC held-back AUC [95% CI] | QC forest error / recall | Lockbox AUC [95% CI] | Lockbox forest error / recall |
+|---|---|---|---|---|
+| Baseline | 0.812 [0.75–0.87] | 2/59 (3.4%) / 46% | 0.843 [0.79–0.89] | 16/332 (4.8%) / 36% |
+| **Lean 4 (main)** | 0.829 [0.77–0.88] | 3/59 (5.1%) / 50% | **0.917** [0.87–0.96] | 20/332 (6.0%) / **67%** |
+| P4 (challenger) | 0.849 [0.78–0.90] | 2/59 (3.4%) / 53% | 0.938 | 18/332 (5.4%) / 71% |
+| Baseline + NFW | 0.801 | 6/59 / 40% | 0.965 | 18/332 / 84% |
+| AlphaEarth + logistic (benchmark) | 0.800 | 9/59 (15.3%) / 55% | 0.936 | 23/332 / 76% |
+| NFW alone, threshold 0.52 | 0.739 | 12/59 (20.3%) / 57% | 0.975 | 46/332 / 94% |
+| MapBiomas 10 m map | 0.584 | 0/59 / 17% | 0.891 | 20/332 / 84% |
+| JRC forest types 2020 | 0.537 | 0/59 / 7% | 0.874 | 7/332 / 77% |
+
+The QC held-back half has 59 forest and 148 plantation points; the lockbox has 332 forest and 95 plantation points after the tree filter. Forest error and recall are at each model's locked 5% threshold.
+
+**Pre-declared comparisons:**
+
+| Comparison | Result |
+|---|---|
+| Lean 4 vs baseline, QC AUC | +0.017 [−0.04, +0.07], p = 0.31: **not supported** |
+| Lean 4 vs baseline, QC forest errors | 3 vs 2: **not met** |
+| P4 vs baseline, QC | +0.037 AUC, p = 0.07 (not significant); forest errors 2 vs 2 |
+| Lean 4 / P4 vs baseline, lockbox AUC | +0.074 / +0.095, both p < 0.001: **supported** |
+| Lean 4 / P4 vs baseline, lockbox forest errors | 20 / 18 vs 16 (not significantly different) |
+
+**Reading:**
+
+- The features capture something real about plantations, but mostly the kind of plantation in MapBiomas's sample.
+- At Cropin's alerts, plantations look more like natural forest. In the sealed QC set, their SAG-phase values sit between MapBiomas forest and MapBiomas plantation, and they get NFW scores of about 109 instead of 0.
+- The earlier finding that "thresholds do not transfer" did not repeat on the sealed half: the baseline's QC forest error was 17% on dev but 3.4% on the sealed half. **[inference]** That finding was largely small-sample noise.
+- P4 did better than Lean 4 on both sealed sets, but it was declared the challenger, so this is reported as such, not swapped in.
+
+## 9. Limits
+
+- **Small, biased QC sample.** 58 forest points in the dev half and 59 in the sealed half. A forest error of 3/59 has a 95% CI of about 2–14%, and an AUC difference of 0.02 cannot be detected reliably at this size. QC forest is only forest where Cropin already detected a clearing, and **Cropin has no labels for forest it misses**.
+- **QC dev was not independent.** It informed several choices (flags, alert-like weights, model comparison), which helps explain why dev-QC results were better than the sealed-half results. Both sealed sets have now been used once and are no longer untouched.
 - **Labels.** MapBiomas labels come from 30 m Landsat interpretation. Points where only 1 of 3 interpreters agreed were left out of training and reported separately. QC labels have not been visually re-checked by us.
 - **Different years.** MapBiomas features come from 2020–22 (dry: 75–97% of normal rainfall) and QC features from 2023–25 (wet: 100–114%). Some differences between the sets may be weather.
 - **Region.** All findings are for southern Brazil. SAG timing and phase in particular depend on local phenology, and should be retested before a global layer.
 
-## 9. Next steps
+## 10. Next steps
 
-| Step | Status |
+| Step | Why |
 |---|---|
-| Phase 6: error breakdown, including where MapBiomas fails (M1–M6) | Ready to start |
-| Phase 7: one final test on the sealed QC half and MapBiomas lockbox, with AlphaEarth and public-map benchmarks | Needs a decision: Lean 4, P4, or both, committed before opening the sealed data |
-| Visual check of the few QC forest points still called plantation (two labellers) | Optional; tells us whether they are label errors |
-| Inputs that would help | QC clearing dates from Cropin; IBGE table 5930 (H42); Cropin scoring our layer on its blind holdout |
-| For Cropin now | Test a **Sep–Nov SAG window** alongside Dec–Jan; it is a cheap change to an existing method |
+| **Ask Cropin for more labelled alerts,** especially forest ones, and for them to score our layer on their blind holdout | The only way to settle whether the features help at alerts. With about 60 forest points, small gains can't be detected. |
+| Ask Cropin for the QC clearing dates | We estimated them from greenness; exact dates make the before-clearing features cleaner |
+| Exploratory, clearly labelled as post-hoc: why plantations at alerts look like forest | Ideas for the next model (for example, younger or recently replanted stands, mixed pixels in small patches) |
+| Visual check of the forest points in error (two labellers) | Tells us whether some errors are label errors |
+| For Cropin now | Test a Sep–Nov SAG window alongside Dec–Jan, a cheap change to an existing method. Its benefit at alerts is not proven. |
 
-## 10. Files
+## 11. Files
 
 All in `Cropin - A Lab/Feature Exploration/`:
 
-- `00 Workflow Plan` (method), `Run Log.md` (every run, decision, and review)
+- `00 Workflow Plan` (method), `Phase 7 Protocol` (locked final test), `Run Log.md` (every run, decision, and review)
 - `Wave 1 Report`, `Wave 2 Report`, `Wave 3 Report` (detailed results)
-- `results/` (tables), `scripts/` (all code, including Google Earth Engine scripts)
+- `results/` (tables, including `results/phase6` and `results/phase7`), `scripts/` (all code, including Google Earth Engine scripts)
 - Hypothesis verdicts are also recorded in *Task 1.2 – Hypotheses Master List* ("Test results so far").

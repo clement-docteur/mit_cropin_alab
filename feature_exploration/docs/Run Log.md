@@ -199,3 +199,66 @@
 - **Reading:** the ranking (AUC) is stable across states, years, and cloudiness; the **threshold** is not — single-year features shift forest error by several points, and the 2024 wet year doubles or triples it on QC. 3-year windows are much steadier. P4 is somewhat more robust than Lean 4 to the biome and wet-year shifts. **[inference]** Production features should use multi-year windows, and thresholds should be re-checked when a new year is added.
 
 - **2026-11-08 · Summary of Findings** (Phases 0–5; .md + .docx) saved after Nathan's approval.
+
+## 2026-11-11 · Phase 6 · Error breakdown (dev data only)
+
+- **Scripts:** `scripts/p6_errors.py`. Outputs: `results/phase6/` (`p6_groups_mb.csv`, `p6_clusters_mb.csv`, `p6_qc_groups.csv`, `p6_qc_error_points.csv`, `p6_mapbiomas_failures.csv`, `mb_dev_forest_history.csv`). Models: Baseline, Lean 4, P4; MapBiomas blocked OOF scores at each model's 5% threshold; QC dev scored with models trained on MapBiomas.
+- **Bug found and fixed:** `CLASS_1992` in the MapBiomas dbf is stored as text, so Phase 0's descriptive flag `forest_all_1985_2022` was 0 for every point. It was never used as a feature or label (labels use 2013–2022, all numeric). Recomputed here as `forest_all_1985_2012` (1,281 of 1,406 dev forest points) and `first_forest_year`.
+- **Forest error by group (Baseline / Lean 4 / P4; Wilson 95% CI in `p6_groups_mb.csv`):**
+  - Overall 5.0% for all three by construction.
+  - **Edges — within 10 m of non-tree (WorldCover 2021), n = 41: 14.6% / 22.0% (9/41) / 17.1%.** 10–30 m: 7.0 / 5.7 / 6.4%. > 100 m: 3.4 / 3.7 / 4.0%. MapBiomas border flag: 7.9% for all three.
+  - Interpreter agreement 2/3: 9.6 / 9.6 / 11.0%; 3/3: 3.6 / 3.7 / 3.4%.
+  - **HC2 proxy — forest only since 1986–2012 (younger/secondary), n = 123: 8.1 / 8.9 / 7.3%** vs forest since 1985: 4.7 / 4.6 / 4.8%.
+  - Disturbed natural forest (n = 49): 10.2 / 10.2 / 12.2%.
+  - State SC: 6.7 / 6.0 / 7.4%; PR 4.1 / 4.7 / 4.9%; RS 4.3 / 4.3 / 2.8%. Pampa 2.1 / 2.7 / 2.1%.
+  - HC1 proxy (elevation ≥ 800 m in PR/SC, Araucaria zone): 7.6 / 6.6 / 6.3%. HC10 proxy (Curitiba metro, n = 45): 8.9 / 4.4 / 2.2%.
+  - Clear images few / many: Lean 4 6.0 / 4.1%; P4 7.0 / 2.7%.
+- **Spatial clusters (0.5° blocks with ≥ 3 forest errors):** Serra Catarinense (São Joaquim, Bom Jardim da Serra, Urubici: 5–6 errors of 22), SC midwest (Lebon Régis, Timbó Grande, Caçador), southern SC escarpment (Siderópolis, Timbé do Sul), Paraná coast (Guaraqueçaba; Guaratuba, Morretes, Paranaguá), SC north coast (Joinville, Garuva), RS highlands (Bom Jesus, São Francisco de Paula, Canela).
+- **QC dev:** all 58 forest and 146 of 149 plantation points are > 10 m from non-tree in WorldCover 2021, so edge effects cannot be tested on QC. Forest called plantation: Lean 4 ids 285, 283, 280, 282; P4 ids 285, 283, 398, 359 (both: 285, 283; MapBiomas map also calls 283 plantation). Plantations missed by both: 41 of 149 (list in `p6_qc_error_points.csv`).
+- **Where the MapBiomas 10 m map fails at Cropin's alerts (QC dev plantations, Task 1.5):**
+  - M3: in 0.5° blocks where the map shows no plantation at any sampled dev point in 2022, it catches **0 of 30** QC plantations, vs 24% (28/119) elsewhere.
+  - M4: where NFW < 130 (not natural), the map catches 26% (22/86) vs 10% (6/63) where NFW ≥ 130.
+  - M6: share of QC plantations mapped as plantation rises with map year — 7% (2017) → 18% (2022) → 19% (2023–2025); no drop in the last series years.
+  - M1 (small stands) and M2 (recent harvest): not testable — only 3 QC plantations sit in WorldCover patches < 10 ha and 1 had a disturbance in the 5 years before cutoff. M5 (pine next to Araucaria): not testable (no species data).
+
+## 2026-11-11 · Phase 7 · Protocol locked (before opening sealed data)
+
+- **Decisions (Nathan):** option B — Lean 4 main, P4 declared challenger; **no edge guard** (edges reported as their own category); protocol approved as written.
+- **Files:** `Phase 7 Protocol` (.md + .docx); thresholds and fitted coefficients in `results/phase7/p7_locked_thresholds.json` (SHA-256 42d032e3b6ea62e36eb6054690e9c67da3d71d3203fd900161745095ea02c36c). Primary thresholds (5% forest error on MapBiomas dev OOF): Lean 4 0.4215, P4 0.4057, Baseline 0.4808, Baseline + NFW 0.4340.
+- **AlphaEarth batch:** `scripts/p7_alphaearth_gee.js` (from `p7_make_gee_script.py` + `p7_alphaearth_template.js`; `GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL`, 64 bands, as-of year = min(cutoff, latest year); no labels embedded). Waiting for Nathan to run.
+- **Sealed data:** still unopened. They will be opened once, after the AlphaEarth export arrives.
+
+## 2026-11-11 · Phase 7 · Final test on the sealed sets (opened once)
+
+- **AlphaEarth export arrived:** `p7_alphaearth.csv`, 2,668 rows, 64 bands, no missing values; embedding years: MapBiomas 2022; QC mostly 2025.
+- **Sealed features** built with the same scripts (`w1_features.py` → `w2_features.py` → `w3_features.py`) pointed at the lockbox and held-back tables. Lockbox forest history (HC2 proxy) recomputed from the dbf: `results/phase7/lockbox_forest_history.csv`.
+- **Script:** `scripts/p7_final.py`. Models fitted on MapBiomas dev only; coefficients checked against `p7_locked_thresholds.json` before scoring (max difference 4.9e-5); thresholds read from the JSON. Outputs: `results/phase7/p7_results.csv`, `p7_comparisons.csv`, `p7_lockbox_groups.csv`.
+- **Test-set sizes (correcting the protocol text):** QC held-back 207 points (59 forest, 148 plantation) — one plantation point (id 31) was cleared in July 2022 and has no pre-clearing Sentinel-2 season, so it was dropped in Phase 0 as for dev. Lockbox 436 → 427 after the tree filter (332 forest, 95 plantation); 17 have agreement = 1 and are included in the headline (as in all dev evaluations) and also shown separately.
+- **QC held-back (59 forest, 148 plantation):** AUC — Lean 4 0.829 [0.77–0.88], P4 0.849 [0.78–0.90], Baseline 0.812 [0.75–0.87], Baseline + NFW 0.801, AlphaEarth 0.800, NFW alone 0.739, MapBiomas map 0.584, JRC GFT 0.537. At the primary (5%) threshold: Lean 4 3/59 forest error (5.1%; 2–14%), recall 50%; P4 2/59 (3.4%), recall 53%; Baseline 2/59 (3.4%), recall 46%; Baseline + NFW 6/59, 40%; AlphaEarth 9/59 (15.3%), 55%; MapBiomas map 0/59, 17%; JRC GFT 0/59, 7%; NFW at 0.52 12/59 (20.3%), 57%.
+- **MapBiomas lockbox (332 forest, 95 plantation):** AUC — Lean 4 0.917 [0.87–0.96], P4 0.938, Baseline 0.843, Baseline + NFW 0.965, AlphaEarth 0.936, NFW alone 0.975. At 5%: Lean 4 20/332 (6.0%), recall 67%; P4 18/332 (5.4%), 71%; Baseline 16/332 (4.8%), 36%.
+- **Pre-declared comparisons:**
+  1. Lean 4 vs Baseline, QC AUC: +0.017 [−0.04, +0.07], one-sided p = 0.31 — **not supported**.
+  2. Lean 4 vs Baseline, QC forest errors: 3 vs 2 (fixed 1, new 2; McNemar p = 0.88) — **not met**.
+  3. P4 vs Baseline, QC: AUC +0.037, p = 0.07 (not significant); forest errors 2 vs 2 — met (equal).
+  4. Lockbox: Lean 4 AUC +0.074 [0.04, 0.11], p < 0.001; P4 +0.095, p < 0.001 — **supported**. Forest errors: Lean 4 20 vs 16, P4 18 vs 16 (not significant either way); recall roughly doubles (36% → 67–71%).
+- **Lockbox groups:** edge (≤ 10 m from non-tree, 9 forest): Lean 4 2/9, P4 2/9, Baseline 1/9; SC 13/120 (Lean 4) vs PR 6/105, RS 1/107; younger forest 4/31; disturbed forest 3/17.
+- **NFW threshold study (Cropin request):** at Cropin's alerts NFW alone gives 13.6% (0.30) to 39% (0.70) forest error; no threshold separates plantation from forest safely at alerts in our region.
+- **Independent review (fresh agent, own code):** every number reproduced exactly; coefficients and thresholds confirmed as locked; no id or block overlap; protocol followed in substance. Notes: agreement = 1 points in the headline (excluding them: Lean 4 19/325, recall 68%; conclusions unchanged); protocol's stated sizes corrected above; bootstrap CIs depend on run order (point estimates unaffected).
+- **Reading:** on MapBiomas-like data the gains replicate fully. On Cropin's held-back alerts the gain is small and not significant, and Lean 4 is not safer than the baseline. The threshold-transfer problem seen on QC dev (baseline 17% forest error) did not appear on the held-back half (baseline 3.4%), so part of the dev-QC picture was small-sample noise **[inference]**. Cropin has no labels for forest it misses, so neither set measures the overall forest error.
+
+- **2026-11-11 · Summary of Findings updated to Phases 0–7 (final)** (.md + .docx) after Nathan's approval. Draft email to Cropin (more labelled alerts, clearing dates, blind-holdout test) saved as `Draft email to Cropin - more labels and holdout test.md` for Nathan to send.
+
+- **2026-11-11 · Master list** (.md + .docx): added the Phase 7 result line to "Test results so far" (Nathan approved). **GitHub upload folder refreshed** (69 files): final Summary, Phase 7 Protocol, updated Run Log, `p6_errors.py`, `p7_final.py`, `p7_make_gee_script.py`, `p7_alphaearth_template.js`, reviewer `p7_review_verify.py`; README updated. Generated `*_gee.js` files (embedded coordinates) still excluded.
+
+- **2026-11-12 · Canopy Height and Wetness – Team Summary** (.md + .docx) saved after Nathan's approval (for the team's weekly work split).
+
+- **2026-11-12 · Slides:** `Canopy height and wetness slides.pptx` (4 slides for the Cropin findings meeting, team-deck style) saved after Nathan's approval. QC numbers use all 414 usable Cropin polygons (both halves) and 2,180 MapBiomas points with tree cover.
+
+## 2026-11-12 · Post-hoc test · Winter NDMI (protocol locked before any sealed-set computation)
+
+- **Origin:** a teammate's forward selection on MapBiomas reference points ("Winter imagery carries the signal SAG misses") plus Claude's dev-only check (winter NDMI AUC 0.69 MapBiomas dev / 0.79 QC dev). Winter NDMI was never computed on the sealed sets before this entry.
+- **Protocol (approved by Nathan):** feature = median of monthly Sentinel-2 NDMI over Apr–Sep within each point's 3-year as-of window. Test 1: winter NDMI alone on QC held-back (AUC > 0.5, and vs summer NDMI). Test 2: Lean 4 + winter NDMI vs Lean 4, trained on MapBiomas dev only (agreement ≥ 2, summer NDVI > 0.6); on QC held-back and the lockbox: AUC difference (paired block bootstrap, one-sided p < 0.05) and forest errors at a threshold set to 5% forest error on MapBiomas dev OOF scores (Lean 4 keeps its locked threshold 0.4215). Success = significant QC AUC gain and no more QC forest errors than Lean 4. Labelled a post-hoc hypothesis and the second use of the sealed sets.
+- **Results (scored once; `scripts/p8_winter_ndmi.py`, `results/phase8_posthoc/p8_winter_ndmi_results.json`):**
+  - Test 1 — winter NDMI alone, QC held-back (59 forest, 148 plantation): **AUC 0.780 [0.71–0.84]**, vs summer NDMI 0.683; paired difference +0.10 [0.03, 0.18], one-sided p = 0.003 — **supported**. Lockbox: 0.706 vs 0.702 (no difference).
+  - Test 2 — Lean 4 + winter NDMI vs Lean 4: QC held-back AUC 0.825 vs 0.829 (−0.003, p = 0.98); forest errors 3/59 vs 3/59; recall 49% vs 50%. Lockbox: 0.917 vs 0.917; forest errors 19 vs 20 of 332 — **not supported**.
+  - Why: trained on MapBiomas dev, winter NDMI gets a coefficient of about −0.08 (summer NDMI +1.14); the two correlate (Spearman 0.75) and winter NDMI adds nothing on MapBiomas points, so the model ignores it. Winter NDMI is stronger specifically at Cropin's alerts, which MapBiomas-trained weights cannot learn **[inference]**.
