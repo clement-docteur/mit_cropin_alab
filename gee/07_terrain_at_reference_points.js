@@ -8,12 +8,14 @@
 //   shrinks, or turns into false plantation calls, on steep or shaded ground.
 // ASSETS NEEDED
 //   projects/cropin-510901/assets/mapbiomas_ref_south  (2,290 points: id, label, state, high_conf)
+//   projects/cropin-510901/assets/cropin_qc            (433 QC polygons: id, qc_label)
 //   Public: NASA SRTM 30 m (USGS/SRTMGL1_003).
 // HOW TO RUN
 //   Paste into a new script in the Code Editor (project cropin-510901) and press Run. In the
-//   Tasks tab, click RUN on the one task. The file lands in Google Drive/cropin_exports. Copy it to
-//   data/gee_exports/ref_terrain.csv.
-// OUTPUT (one row per reference point)
+//   Tasks tab, click RUN on both tasks. The files land in Google Drive/cropin_exports. Copy them to
+//   data/gee_exports/ref_terrain.csv and data/gee_exports/qc_terrain.csv.
+//   (qc_terrain was added later, for the reference -> QC test in src/terrain_transfer_qc.py.)
+// OUTPUT (one row per reference point; qc_terrain.csv has the same columns as polygon means, with qc_label)
 //   id, label, state, elev_m, slope_deg, aspect_deg (0 = north, 90 = east),
 //   hs_winter, hs_summer  hillshade 0-255 (0 = full shadow, 255 = facing the sun) for the sun
 //                         position at the Sentinel-2 overpass (about 10:30 local) in June and in
@@ -23,6 +25,7 @@
 //   relief_m              max minus min elevation within 100 m (how rugged the surroundings are)
 // #####################################################################
 
+var qc = ee.FeatureCollection('projects/cropin-510901/assets/cropin_qc');
 var ref = ee.FeatureCollection('projects/cropin-510901/assets/mapbiomas_ref_south');
 var dem = ee.Image('USGS/SRTMGL1_003').select('elevation');
 var terrain = ee.Terrain.products(dem);           // adds slope, aspect (degrees)
@@ -42,4 +45,13 @@ print('example row:', out.first());
 Export.table.toDrive({
   collection: out, description: 'ref_terrain', folder: 'cropin_exports', fileFormat: 'CSV',
   selectors: ['id', 'label', 'state', 'elev_m', 'slope_deg', 'aspect_deg', 'hs_winter', 'hs_summer', 'relief_m']
+});
+
+// QC polygons: mean of each terrain value over the polygon
+var COLS = ['elev_m', 'slope_deg', 'aspect_deg', 'hs_winter', 'hs_summer', 'relief_m'];
+var qcOut = img.reduceRegions({collection: qc, reducer: ee.Reducer.mean(), scale: 30});
+print('QC polygons (expect 433):', qcOut.size());
+Export.table.toDrive({
+  collection: qcOut, description: 'qc_terrain', folder: 'cropin_exports', fileFormat: 'CSV',
+  selectors: ['id', 'qc_label'].concat(COLS)
 });
