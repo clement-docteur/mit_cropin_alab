@@ -1,0 +1,91 @@
+{
+  "output": "harvest_cycles_features.csv",
+  "script": "build_harvest_cycles_features.py",
+  "command_line": [
+    "--data",
+    "CROPIN-MIT-DATA/harvest_cycles_v2",
+    "--points",
+    "public_data/harvest_cycles/points.csv",
+    "--label-column",
+    "label",
+    "--out",
+    "public_data/harvest_cycles/harvest_cycles_features.csv"
+  ],
+  "created_utc": "2026-11-13T14:16:51+00:00",
+  "git_commit": "1b308f192d5d28799db76b18501cf286137bdeb0",
+  "python": "3.13.18",
+  "numpy": "2.5.3",
+  "pandas": "3.0.5",
+  "inputs": {
+    "series": {
+      "path": "CROPIN-MIT-DATA/harvest_cycles_v2/series_nbr_median.csv.gz",
+      "sha256": "d68359977b0549f183b3c1f96c130d050c0b6bb0bd5d5281a384a0e393296a8c"
+    },
+    "observations": {
+      "path": "CROPIN-MIT-DATA/harvest_cycles_v2/observations.csv.gz",
+      "sha256": "4c12ac99e45a10ccffe750c58c9ee412cd80905cb727bee1787c2e2733d6c02a"
+    },
+    "points": {
+      "path": "public_data/harvest_cycles/points.csv",
+      "sha256": "379799e40b2a8f0f48dc95051ee5ce272065f05cec28b0208e39c9f03cdd558a"
+    }
+  },
+  "settings": {
+    "first_year": 1985,
+    "last_year": 2020,
+    "min_years": 8,
+    "despike_threshold": 0.9,
+    "despike_min_spike": 0.05,
+    "max_segments": 18,
+    "bic_penalty": 1.0,
+    "drop": 0.2,
+    "max_cut_years": 3,
+    "cycle_regrow_fraction": 0.5,
+    "max_cycle_years": 10,
+    "regrow_time_fraction": 0.8,
+    "fast_regrowth_years": 4.0,
+    "fall_window_years": 3,
+    "min_regrow_years": 1.0,
+    "years_since_last_cut_if_none": 40.0,
+    "canopy_level": 0.5835294280425446,
+    "open_level": 0.4048285585388521,
+    "min_open_years": 3,
+    "open_lookback_values": 8,
+    "fast_rise_years": 5,
+    "closed_min_tree_cover": 90,
+    "closed_percentile": 5.0,
+    "closed_first_year": 2000,
+    "open_max_tree_cover": 10,
+    "open_percentile": 25.0,
+    "open_years": [
+      1999,
+      2000,
+      2001
+    ],
+    "calibration_min_pixels": 30,
+    "seasonal_dry_months": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "seasonal_indices": [
+      "nbr",
+      "ndvi"
+    ],
+    "seasonal_windows": [
+      [
+        1985,
+        2020,
+        5
+      ],
+      [
+        2013,
+        2020,
+        3
+      ]
+    ]
+  }
+}
