@@ -11,11 +11,11 @@ new goes in `pine_detection/`, and no existing file is edited.
 | Step | State | Where |
 |---|---|---|
 | SDPT checked as a label source | Done. v2.0 has species for the south: 2013–14 data, about 61% of plantation points covered | `docs/sdpt_check.md`, `src/sdpt_overlay.py` |
-| P02: features vs SDPT species | Done. **Nothing separates the species on SDPT labels** (best is latitude, AUC 0.64). The labels are suspect | `docs/p02_findings.md`, `notebooks/P02_species_univariate.ipynb` |
+| Features vs SDPT species | Done. **Nothing separates the species on SDPT labels** (best is latitude, AUC 0.64). The labels are suspect | `notebooks/pine_vs_eucalyptus.ipynb` (the single notebook for this work), `docs/findings.md` |
 | Gold sample drawn | Done. 250 MapBiomas points: batch 1 (135) audits SDPT, batch 2 (115) adds new labels | `src/make_gold_sample.py` → `data/processed/gold_sample/` (local) |
 | Labelling protocol + GEE helper | Done, ready to use | `docs/labelling_protocol.md`, `gee/02_labelling_helper.js` |
 | **Photo-interpretation, batch 1** | **To do: two interpreters, about 3–4 h each** | — |
-| P01 (agreement, SDPT accuracy), then P03 model | Waiting for labels | — |
+| Agreement and SDPT accuracy, then the model | Waiting for labels. These go in as new sections of the same notebook | — |
 | Questions to Cropin (§1) | Not sent yet | — |
 
 ---
@@ -123,7 +123,10 @@ next to its NBR/SAG history, so the rotation pattern helps the interpreter. This
 
 ---
 
-## 4. Analysis (new notebooks, same conventions)
+## 4. Analysis (same conventions)
+
+**Update, 21 Nov:** everything now lives in **one notebook**, `notebooks/pine_vs_eucalyptus.ipynb`. The
+steps below become sections of it as the labels arrive, not separate notebooks.
 
 All code imports the shared helpers instead of re-implementing them:
 `sys.path.insert(0, str(ROOT / "src")); from qc_analysis import auc_ci, mwu_test, holm, spatial_groups, cv_evaluate, set_style, savefig`.

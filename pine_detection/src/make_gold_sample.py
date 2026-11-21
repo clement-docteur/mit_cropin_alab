@@ -88,9 +88,10 @@ def main():
         (OUT / f"gold_batch{b}.kml").write_text(kml(s, f"Species gold sample, batch {b}"), encoding="utf-8")
     key[["sample_id", "batch", "lon", "lat"]].round(6).to_csv(OUT / "gold_points_gee.csv", index=False)
 
-    print(f"{len(key)} points written to {OUT}")
+    print(f"{len(key)} points written to {OUT.relative_to(sf.ROOT).as_posix()}/")
     print(pd.crosstab(key.stratum, key.batch, margins=True))
     print(pd.crosstab(key.stratum, key.state))
+    return key
 
 
 if __name__ == "__main__":

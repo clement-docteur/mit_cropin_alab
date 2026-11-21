@@ -100,7 +100,7 @@ check, never as the main label.
 
 ## Next steps
 
-1. Join the SDPT labels to `Master Data/master_features_v3*.csv`, then start P02: which existing features
+1. *(Done: see `notebooks/pine_vs_eucalyptus.ipynb`.)* Join the SDPT labels to `Master Data/master_features_v3*.csv`, then test which existing features
    separate pine from eucalyptus, scored on the silver labels.
 2. Fetch every tile over PR/SC/RS (`--bbox`), then overlay the QC plantations from the local cache.
 3. Photo-interpret a gold set: over-sample the unmatched plantation points and the 23 forest points inside

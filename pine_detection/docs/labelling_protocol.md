@@ -6,7 +6,7 @@ together afterwards.
 
 ## Why we're doing this
 
-SDPT's species labels didn't separate pine from eucalyptus with any feature (`p02_findings.md`). Before
+SDPT's species labels didn't separate pine from eucalyptus with any feature (`findings.md`). Before
 building a model, we need to know **how often SDPT is right**. That is batch 1. Batch 2 then adds labels
 where SDPT has none.
 
@@ -75,7 +75,7 @@ dense** canopy and very short rotations. If it looks like eucalyptus but feels o
 ## After labelling
 
 1. Put both sheets in `data/processed/gold_sample/labels/`.
-2. The P01 notebook (still to be written) will:
+2. A new section of `notebooks/pine_vs_eucalyptus.ipynb` (still to be written) will:
    - check that the sheets are filled in properly;
    - compute agreement (Cohen's κ) on `species`;
    - list disagreements for a joint review. The agreed label goes in `species_gold`;

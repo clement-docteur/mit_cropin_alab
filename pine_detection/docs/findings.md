@@ -1,13 +1,9 @@
-# P02 findings: pine vs eucalyptus on SDPT labels (20 Nov 2026)
+# Findings: pine vs eucalyptus on SDPT labels (21 Nov 2026)
 
-Clement Docteur (with Claude). Source: `notebooks/P02_species_univariate.ipynb`, built by
-`notebooks/build_P02.py`.
-- Figures: `figures/P02_univariate_auc.png`, `figures/P02_rotation_distributions.png`.
-- Tables: `results/P02_univariate.csv`, `results/P02_families_cv.csv`.
-
-**Status:** the notebook ran on 21 Nov 2026 and is saved with its outputs. The numbers are identical to
-the first run. On 20 Nov, Windows Application Control blocked a scikit-learn DLL for a while. If that
-happens again, wait and rerun.
+Clement Docteur (with Claude). Source: `notebooks/pine_vs_eucalyptus.ipynb`, the single notebook for this
+work, with figure `figures/pine_vs_eucalyptus_auc.png`. The random forest and threshold-sensitivity rows
+below come from the first, longer version of the analysis (git history, commit `afacbee`). The simplified
+notebook doesn't rerun them.
 
 ## Bottom line
 
@@ -27,9 +23,9 @@ being inside an SDPT v2.0 polygon. The lockbox split (17 eucalyptus, 39 pine) is
 | Best single feature | Latitude: AUC 0.64 [0.57–0.72], Holm p = 0.008. Eucalyptus lies further south. It is the only feature significant after correction |
 | Best satellite features | Share of years below canopy 0.60 [0.53–0.68]. B8A narrow NIR in winter 0.57 [0.49–0.64] and B6 red-edge in winter 0.56 [0.49–0.64], both higher in eucalyptus as expected for broadleaf vs needles |
 | New rotation features | AUC 0.50–0.52, unchanged with a clear-cut threshold of 0.15 or 0.25. Median years between clear-cuts is **11 for both species** |
-| Feature families, logistic regression, spatially blocked CV (20 blocks, seeds 0–19) | History + rotation 0.57. Geography 0.54. Spectral 0.44. Structure 0.40. AlphaEarth 0.48. Everything together 0.51 |
-| Random forest (seeds 0–4) | Geography 0.51. All features 0.49. All + AlphaEarth 0.47 |
-| Within each state (top features) | AUCs of 0.5–0.74 that rise and fall from state to state. PR has only 17 eucalyptus points |
+| Feature families, logistic regression, spatially blocked CV (20 blocks, seeds 0–19) | Geography 0.54. Master features 0.51. Rotation 0.37. AlphaEarth 0.48. Everything 0.51. *(Longer version, by sub-family: history + rotation 0.57, spectral 0.44, structure 0.40)* |
+| Random forest, seeds 0–4 *(longer version only)* | Geography 0.51. All features 0.49. All + AlphaEarth 0.47 |
+| Within each state | Latitude 0.63–0.74 in every state, so SDPT's species sit in regional clusters even inside a state. Satellite features 0.51–0.67, changing from state to state. PR has only 17 eucalyptus points |
 
 AUCs below 0.5 in cross-validation mean the model learned nothing that carries over to the left-out
 regions. They don't mean a signal in the reverse direction.
