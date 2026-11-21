@@ -3,6 +3,7 @@ Master Data/
 # ---- Local-only folders and files ----
 _handoff/
 CLAUDE.local.md
+AGENTS.md
 .venv/
 
 # ---- Sponsor (Cropin) data: the repo is PUBLIC, so data stays local ----
