@@ -1,7 +1,7 @@
 # Findings: pine vs eucalyptus on SDPT labels (21 Nov 2026)
 
 Clement Docteur (with Claude). Source: `notebooks/pine_vs_eucalyptus.ipynb`, the single notebook for this
-work, with figure `figures/pine_vs_eucalyptus_auc.png`. The random forest and threshold-sensitivity rows
+work, with figures `figures/pine_vs_eucalyptus_auc.png` and `figures/pine_vs_eucalyptus_harvest_cycle.png`. The random forest and threshold-sensitivity rows
 below come from the first, longer version of the analysis (git history, commit `afacbee`). The simplified
 notebook doesn't rerun them.
 
@@ -27,6 +27,22 @@ being inside an SDPT v2.0 polygon. The lockbox split (17 eucalyptus, 39 pine) is
 | Random forest, seeds 0–4 *(longer version only)* | Geography 0.51. All features 0.49. All + AlphaEarth 0.47 |
 | Within each state | Latitude 0.63–0.74 in every state, so SDPT's species sit in regional clusters even inside a state. Satellite features 0.51–0.67, changing from state to state. PR has only 17 eucalyptus points |
 
+## Harvest cycle (notebook section 4, figure `figures/pine_vs_eucalyptus_harvest_cycle.png`)
+
+This uses the team's harvest detector (`combined_model/scripts/harvest_features.py`, 1985–2020) and
+MapBiomas's yearly classes for plantation age.
+
+| Check | Result |
+|---|---|
+| Cycle measures vs SDPT species | Cuts since 1985, cuts per decade as plantation, years to regrow, years since last cut, years as plantation: AUC 0.50–0.54. Regrowth 1.7 years (eucalyptus) vs 2.1 years (pine), within the noise |
+| Other yearly series and cut sizes | Whole-year, dry-season, wet-season median, yearly maximum NBR, NDVI × drops 0.10/0.15/0.20: AUC 0.50–0.57 |
+| Without labels, plantations of 20+ years (166) | Only **7%** cut at eucalyptus speed (≥ 1.2 cuts per decade). 34% at pine speed (0.4–0.8), 41% slower. A single hump, and SDPT eucalyptus sits in it with SDPT pine |
+
+So either eucalyptus is rare in older stands, or **yearly Landsat medians miss most eucalyptus cuts**,
+since a stand cut and closed again within about 2 years barely moves a median of about 6 images a year.
+The hand labels will tell which. If many stands are eucalyptus, the harvest cycle needs a denser series
+(every Sentinel-2 or Landsat image, from GEE).
+
 AUCs below 0.5 in cross-validation mean the model learned nothing that carries over to the left-out
 regions. They don't mean a signal in the reverse direction.
 
@@ -46,7 +62,8 @@ regions. They don't mean a signal in the reverse direction.
   from each other. Species-specific ones haven't been tested, such as the full band × month grid (the
   gee/05 exports aren't on this machine), texture (row spacing, crown shape) or red-edge ratios.
 - **Too-coarse NBR series:** the yearly median NBR comes from about 6 Landsat images a year, so a fast
-  eucalyptus regrowth (2–3 years) may hide some clear-cuts.
+  eucalyptus regrowth (2–3 years) may hide some clear-cuts. The harvest-cycle section above makes this
+  more likely: almost no stand looks like a 6–8-year rotation.
 
 ## Next steps
 

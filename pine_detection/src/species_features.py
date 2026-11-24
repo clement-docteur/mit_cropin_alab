@@ -1,9 +1,10 @@
-"""Shared helpers for the pine-vs-eucalyptus notebooks (pine_detection/notebooks/P0x).
+"""Shared helpers for pine_detection/notebooks/pine_vs_eucalyptus.ipynb.
 
 Statistics come from src/qc_analysis.py (auc_ci, mwu_test, holm, spatial_groups, cv_evaluate), which is
 imported rather than copied. This file only adds what is specific to species:
 - loading the master feature table together with the SDPT species labels;
-- rotation-length and thinning features from the yearly Landsat NBR series;
+- rotation-length and thinning features from the yearly Landsat series, plantation age from MapBiomas,
+  and a wrapper around the team's harvest-cycle detector;
 - a species palette, and a savefig that writes to pine_detection/figures/.
 """
 import sys
@@ -82,11 +83,39 @@ def add_sdpt(d, cache=ROOT / "data/processed/sdpt_tiles", near_m=100.0):
 
 
 # ------------------------------------------------------------------ rotation features (H S1/S2)
-def load_nbr(pids):
-    """Yearly median Landsat NBR 1985-2020 (public_data/harvest_cycles), one row per team_pid."""
-    s = pd.read_csv(ROOT / "public_data/harvest_cycles/series_nbr_median.csv.gz", index_col=0)
+HC = ROOT / "public_data/harvest_cycles"
+
+
+def load_series(pids, name="nbr_median"):
+    """A yearly Landsat series 1985-2020 from public_data/harvest_cycles, one row per team_pid.
+    name: nbr_median, nbr_dry_median, nbr_wet_median, nbr_max or ndvi_median."""
+    s = pd.read_csv(HC / f"series_{name}.csv.gz", index_col=0)
     s.columns = s.columns.astype(int)
     return s.reindex(pids)
+
+
+def load_nbr(pids):
+    """Yearly median Landsat NBR 1985-2020, one row per team_pid."""
+    return load_series(pids, "nbr_median")
+
+
+def plantation_years(pids, start=1985, end=2020):
+    """From MapBiomas's yearly class history (class 9 = forest plantation): first year as plantation and
+    number of plantation years in start..end. NaN first year if never plantation."""
+    h = pd.read_csv(HC / "val_label_history.csv", index_col=0).reindex(pids)
+    h.columns = [int(c.split("_")[1]) for c in h.columns]
+    is9 = h[list(range(start, end + 1))].round() == 9
+    return pd.DataFrame({"first_plant_year": is9.idxmax(axis=1).where(is9.any(axis=1)),
+                         "n_plant_years": is9.sum(axis=1)}, index=h.index)
+
+
+def team_harvest_features():
+    """The team's harvest-cycle detector (combined_model/scripts/harvest_features.py: segmented NBR fit,
+    1985-2020), run unchanged on all public points. One row per team_pid; takes about 20 s."""
+    sys.path.insert(0, str(ROOT / "combined_model/scripts"))
+    import harvest_features as hf
+    _, feat, _, _ = hf.run(str(HC))
+    return feat
 
 
 def rotation_features(nbr, cut=0.20, thin=0.08, start=2000, end=2020, min_gap=3):
