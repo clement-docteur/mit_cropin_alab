@@ -1,0 +1,6 @@
+model,AUC,FP rate (fixed thr),FN rate (fixed thr),FP rate at MB recall (test ROC),QC val AUC (pooled OOF),QC OOF FP rate
+MapBiomas 10 m map,0.538,0.913,0.012,0.913,,0.822
+Ridge LR,0.93,0.333,0.071,0.58,0.92,0.374
+Lasso LR,0.928,0.333,0.095,0.536,0.92,0.394
+Neural net,0.916,0.362,0.083,0.638,0.92,0.354
+History + spectral avg,0.912,0.464,0.048,0.696,0.918,0.498
